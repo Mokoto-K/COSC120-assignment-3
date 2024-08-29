@@ -1,24 +1,77 @@
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 
 public class MenuSearcher {
     /**
      * Created by Dr Andreas Shepley for COSC120 on 03/07/2023
      */
     private static final String filePath = "./menu.txt";
-    private static final Icon icon = new ImageIcon("./gobbledy_geek_graphic_small.png");
-    private static Menu menu;
+    private static final ImageIcon icon = new ImageIcon("./gobbledy_geek_graphic_small.png");
+    private static Menu menu = null;
     private static final String appName = "Eets 4 Gobbledy-Geeks";
+
+    // Initialize our default panel to be used throughout the class
+    private static JPanel defaultPane = null;
+    // Initialize our user input class to be used throughout the class
+    private static UserInput userInput = null;
 
     public static void main(String[] args) {
         menu = loadMenu(filePath);
-        DreamMenuItem dreamMenuItem = getFilters();
-        processSearchResults(dreamMenuItem);
-        System.exit(0);
+
+        // Create the main frame for our gui
+        JFrame mainFrame = new JFrame(appName);
+
+        // Set basic settings for our gui
+        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        mainFrame.setIconImage(icon.getImage());
+        mainFrame.setMinimumSize(new Dimension(800, 800));
+
+        // Assign the output of our main panel method to the set content pane method of the JFrame to initialise our gui
+        defaultPane = mainPanel();
+        mainFrame.setContentPane(defaultPane);
+
+        // Jam all our panels into the frame and make it visible
+        mainFrame.pack();
+        mainFrame.setVisible(true);
+
+//        DreamMenuItem dreamMenuItem = getFilters();
+//        processSearchResults(dreamMenuItem);
+//        System.exit(0);
     }
+
+    public static JPanel mainPanel() {
+        JPanel mainWindowPanel = new JPanel();
+        userInput = new UserInput(menu);
+        // TODO - Pick a decent layout
+        mainWindowPanel.setLayout(new BorderLayout());
+
+        JButton searchButt = new JButton("Search for yo' berger");
+        ActionListener listener = e -> searchForItems();
+        searchButt.addActionListener(listener);
+
+        mainWindowPanel.add(userInput.generateWindow(), BorderLayout.CENTER);
+        mainWindowPanel.add(searchButt, BorderLayout.SOUTH);
+
+        return mainWindowPanel;
+    }
+
+    public static void searchForItems() {
+
+    }
+
+
+
+
+
+
+
+
 
     public static DreamMenuItem getFilters(){
 
@@ -310,6 +363,7 @@ public class MenuSearcher {
         }
         return menu;
     }
+
 
 }
 
