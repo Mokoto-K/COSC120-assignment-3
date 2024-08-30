@@ -1,12 +1,19 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class UserInput {
 
     private Menu menu;
+
+    private JLabel bunOrSauceLabel;
+    private JComboBox<String> bunOrSauceCombo;
+
+    private Type selectedOption;
 
     /**
      * Constructor for the class, takes in a menu object that is used to access the database of
@@ -45,24 +52,54 @@ public class UserInput {
     public JPanel typePanel() {
         // initialize the panel
         JPanel meal = new JPanel();
-
+        selectedOption = Type.SELECT;
         // Set all the parameters for the panel
         // TODO - set layout
-
-
         meal.setBorder(BorderFactory.createTitledBorder("Would you like a boigur or swalid?"));
 
-        String[] menuItems = new String[]{Arrays.toString(Type.values())};
-        JComboBox<String> typesOfMeals = new JComboBox<>(menuItems);
-//        JLabel label = new JLabel("This is my label");
-//        label.setPreferredSize(new Dimension(100, 100));
+        // Create a combobox and populate it with all options from the type enum
+        JComboBox<Type> typesOfMeals = new JComboBox<>(Type.values());
+        typesOfMeals.setSelectedItem(Type.SELECT);
+        // add listener
+        ActionListener listener = e -> {
+            bunOrSauceCombo.setEnabled(!(typesOfMeals.getSelectedItem() == Type.SELECT));
+            bunsOrDressing((Type) Objects.requireNonNull(typesOfMeals.getSelectedItem()));
+        };
+
+        typesOfMeals.addActionListener(listener);
+        // Set all parameters for the combobox
+        typesOfMeals.setPreferredSize(new Dimension(200, 20));
 
 
+        bunOrSauceCombo = new JComboBox<>();
+        bunOrSauceCombo.addItem("Select Item");
+        bunOrSauceCombo.setEnabled(false);
 
-        meal.add(typesOfMeals);
-
-
+        // Add the combo box to the main panel
+        meal.add(typesOfMeals, BorderLayout.NORTH);
+        meal.add(bunOrSauceCombo, BorderLayout.WEST);
+//        meal.add(bunsAndDressingPanel(), BorderLayout.WEST);
 
         return meal;
+    }
+
+    public void bunsOrDressing(Type typeOfFood) {
+
+        if (typeOfFood.equals(Type.BURGER)){
+            bunOrSauceCombo.removeAllItems();
+            for (Object s : menu.getAllIngredientTypes(Filter.BUN)) {
+                bunOrSauceCombo.addItem(s.toString());
+            }
+        }
+        else if (typeOfFood.equals(Type.SALAD)) {
+            bunOrSauceCombo.removeAllItems();
+            for (Object s : menu.getAllIngredientTypes(Filter.DRESSING)) {
+                bunOrSauceCombo.addItem(s.toString());
+            }
+        }
+        else {
+            bunOrSauceCombo.removeAllItems();
+            bunOrSauceCombo.addItem("Select Item");
+        }
     }
 }
