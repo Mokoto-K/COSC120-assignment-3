@@ -30,7 +30,7 @@ public class MenuSearcher {
         // Set basic settings for our gui
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mainFrame.setIconImage(icon.getImage());
-        mainFrame.setMinimumSize(new Dimension(800, 800));
+        mainFrame.setMinimumSize(new Dimension(400, 800));
 
         // Assign the output of our main panel method to the set content pane method of the JFrame to initialise our gui
         defaultPane = mainPanel();
@@ -55,6 +55,9 @@ public class MenuSearcher {
         ActionListener listener = e -> searchForItems();
         searchButt.addActionListener(listener);
 
+//        JLabel mainImage = new JLabel(new ImageIcon("gobbledy_geek_graphic.png"));
+//        mainImage.setSize(new Dimension(200, 200));
+//        mainWindowPanel.add(mainImage, BorderLayout.WEST);
         mainWindowPanel.add(userInput.generateWindow(), BorderLayout.CENTER);
         mainWindowPanel.add(searchButt, BorderLayout.SOUTH);
 
