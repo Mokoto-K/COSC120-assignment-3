@@ -22,7 +22,7 @@ public class UserInput {
     private Meat meat;
     private boolean cheese;
     private float minPrice = 0;
-    private float maxPrice = 0;
+    private float maxPrice = 80;
 
 //    private
 
@@ -331,17 +331,13 @@ public class UserInput {
 
         meatCombo = new JComboBox<>(Meat.values());
         meatCombo.setPreferredSize(new Dimension(300, 40));
-        meatCombo.setSelectedItem(Meat.NA);
+        meatCombo.setSelectedItem(Meat.BEEF.toString().toLowerCase());
         meat = (Meat) meatCombo.getSelectedItem();
 
         meatCombo.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                if (Objects.equals(meatCombo.getSelectedItem(), "Any meat will do...")) {
-                    meat = Meat.NA;
-                }
-                meat = Meat.valueOf(meatCombo.getSelectedItem().toString().toUpperCase());
+                meat = (Meat) meatCombo.getSelectedItem();
             }
-
         });
 
         mainPanel.add(meatCombo);

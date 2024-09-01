@@ -110,7 +110,16 @@ public class MenuSearcher {
         filtersMap.put(Filter.TOMATO, tomato);
 
         Meat meat = userInput.getMeat();
-        filtersMap.put(Filter.MEAT, meat);
+        if (meat == Meat.NA) {
+            List<String> allMeat = new ArrayList<>();
+            for (Meat m : Meat.values()) {
+                allMeat.add(m.toString());
+            }
+            filtersMap.put(Filter.MEAT, allMeat);
+        }
+        else {
+            filtersMap.put(Filter.MEAT, meat);
+        }
 
         if (userInput.getCheese()) {
             filtersMap.put(Filter.CHEESE, "yes");

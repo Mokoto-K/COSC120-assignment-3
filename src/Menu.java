@@ -27,7 +27,7 @@ public class Menu {
     public List<MenuItem> findMatch(DreamMenuItem dreamMenuItem){
         List<MenuItem> matching = new ArrayList<>();
         for(MenuItem menuItem: menu){
-            System.out.println(menuItem.getMenuItemName());
+//            System.out.println(menuItem.getMenuItemName());
             if(!menuItem.getDreamMenuItem().matches(dreamMenuItem)) continue;
             if(menuItem.getPrice()<dreamMenuItem.getMinPrice()|| menuItem.getPrice()>dreamMenuItem.getMaxPrice()) continue;
             matching.add(menuItem);
