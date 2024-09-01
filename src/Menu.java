@@ -15,7 +15,7 @@ public class Menu {
         for(MenuItem menuItem: menu){
             if(menuItem.getDreamMenuItem().getAllFilters().containsKey(filter)){
                 var ingredientTypes = menuItem.getDreamMenuItem().getFilter(filter);
-                System.out.println(ingredientTypes);
+//                System.out.println(ingredientTypes);
                 if(ingredientTypes instanceof Collection<?>) allSubtypes.addAll((Collection<?>) ingredientTypes);
                 else allSubtypes.add(menuItem.getDreamMenuItem().getFilter(filter));
             }

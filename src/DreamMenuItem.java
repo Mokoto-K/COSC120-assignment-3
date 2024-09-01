@@ -5,10 +5,10 @@ public class DreamMenuItem {
      * Created by Dr Andreas Shepley for COSC120 on 03/07/2023
      */
     private final Map<Filter,Object> filterMap;
-    private final double minPrice;
-    private final double maxPrice;
+    private final float minPrice;
+    private final float maxPrice;
 
-    public DreamMenuItem(Map<Filter, Object> filterMap, double minPrice, double maxPrice) {
+    public DreamMenuItem(Map<Filter, Object> filterMap, float minPrice, float maxPrice) {
         this.filterMap=new LinkedHashMap<>(filterMap);
         this.minPrice=minPrice;
         this.maxPrice=maxPrice;
@@ -23,10 +23,10 @@ public class DreamMenuItem {
         return new LinkedHashMap<>(filterMap);
     }
     public Object getFilter(Filter key){return getAllFilters().get(key);}
-    public double getMinPrice() {
+    public float getMinPrice() {
         return minPrice;
     }
-    public double getMaxPrice() {
+    public float getMaxPrice() {
         return maxPrice;
     }
 

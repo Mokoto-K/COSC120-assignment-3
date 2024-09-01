@@ -1,14 +1,35 @@
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 import java.util.*;
 
 public class UserInput {
 
     private Menu menu;
 
+    private String bun;
+    private Set<Object> sauce;
+    private Dressing dressing;
+    private Set<Object> leafy;
+    private String cucumber;
+    private String pickles;
+    private String tomato;
+    private Meat meat;
+    private boolean cheese;
+    private float minPrice = 0;
+    private float maxPrice = 0;
+
+//    private
+
+
+
     private JLabel bunOrSauceLabel;
-    private JComboBox<String> bunOrDressingCombo;
+    private JComboBox<Object> bunOrDressingCombo;
     private JComboBox<Meat> meatCombo;
     private final DefaultListModel<Object> sauceOrGreensModel = new DefaultListModel<>();
     private JList<Object> sauceOrGreensList;
@@ -17,8 +38,10 @@ public class UserInput {
     private ButtonGroup pickleButtonGroup;
     private ButtonGroup tomatoButtonGroup;
     private JCheckBox cheeseCheck;
-    private JTextField minPrice;
-    private JTextField maxPrice;
+    private final JLabel feedbackMin = new JLabel(" "); //set to blank to start with
+    private final JLabel feedbackMax = new JLabel(" ");
+//    private JTextField minPrice;
+//    private JTextField maxPrice;
 
     private Type selectedOption;
 
@@ -53,6 +76,7 @@ public class UserInput {
         filterOption.add(meatPanel());
         filterOption.add(cheesePanel());
         filterOption.add(pricePanel());
+
         // Return the main panel
         return filterOption;
     }
@@ -84,6 +108,7 @@ public class UserInput {
             sauceOrGreensList.setEnabled(!(typesOfMeals.getSelectedItem() == Type.SELECT));
             burgerOrSalad((Type) Objects.requireNonNull(typesOfMeals.getSelectedItem()));
 
+
         };
 
         typesOfMeals.addActionListener(listener);
@@ -98,6 +123,7 @@ public class UserInput {
         meal.add(Box.createRigidArea(new Dimension(0,20)));
         meal.add(typePane);
         meal.add(Box.createRigidArea(new Dimension(0,20)));
+
 
         return meal;
     }
@@ -119,12 +145,42 @@ public class UserInput {
         cucumberButtonGroup.add(yes);
         cucumberButtonGroup.add(no);
         cucumberButtonGroup.add(neither);
+        cucumberButtonGroup.setSelected(yes.getModel(), true);
+
+        yes.setActionCommand("yes");
+        no.setActionCommand("no");
+        neither.setActionCommand("I don't mind");
+
+        ActionListener listener = e -> {
+            cucumber = cucumberButtonGroup.getSelection().getActionCommand();
+            if (cucumber.equals("I don't mind")) {
+                cucumber = "NA";
+            }
+        };
+        yes.addActionListener(listener);
+        no.addActionListener(listener);
+        neither.addActionListener(listener);
 
         JLabel bunOrDressingLabel = new JLabel(" ");
         bunOrDressingCombo = new JComboBox<>();
         bunOrDressingCombo.setPreferredSize(new Dimension(300, 30));
         bunOrDressingCombo.addItem("Select Item");
         bunOrDressingCombo.setEnabled(false);
+
+        // Add an item listener to help pass which option was selected for sauce or dressing
+        bunOrDressingCombo.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                if (selectedOption == Type.BURGER) {
+                    bun = (String) bunOrDressingCombo.getSelectedItem();
+                }
+                else {
+                    if (bunOrDressingCombo.getSelectedItem().toString().equals("I don't mind...")) {
+                        dressing = Dressing.NA;
+                    }
+                    dressing = Dressing.valueOf(bunOrDressingCombo.getSelectedItem().toString().toUpperCase().replace(" ", "_"));
+                }
+            }
+        });
 
         aCuccumberRadio.add(cucumberLabel);
         aCuccumberRadio.add(yes);
@@ -162,6 +218,17 @@ public class UserInput {
         sauceOrGreensList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         sauceOrGreensList.setEnabled(false);
 
+        ListSelectionListener listener = e -> {
+            if (selectedOption == Type.BURGER) {
+                sauce = new HashSet<>(sauceOrGreensList.getSelectedValuesList());
+            }
+            else {
+                leafy = new HashSet<>(sauceOrGreensList.getSelectedValuesList());
+            }
+        };
+
+        sauceOrGreensList.addListSelectionListener(listener);
+
         listPane.add(sauceOrGreensLabel);
         listPane.add(scrollPane);
 
@@ -174,24 +241,42 @@ public class UserInput {
 
     public JPanel picklePanel() {
         JPanel mainPanel = new JPanel();
-        mainPanel.setPreferredSize(new Dimension(500, 100));
+        mainPanel.setPreferredSize(new Dimension(500, 50));
 
         JPanel radioPanel = new JPanel();
 
         pickleButtonGroup = new ButtonGroup();
         JLabel pickleLabel = new JLabel("Pickles?");
-        JRadioButton yes = new JRadioButton("Yes");
-        JRadioButton no = new JRadioButton("No");
+        JRadioButton yes = new JRadioButton("yes");
+        JRadioButton no = new JRadioButton("no");
         JRadioButton neither = new JRadioButton("I don't mind");
         yes.requestFocusInWindow();
         pickleButtonGroup.add(yes);
         pickleButtonGroup.add(no);
         pickleButtonGroup.add(neither);
+        pickleButtonGroup.setSelected(yes.getModel(), true);
 
         radioPanel.add(pickleLabel);
         radioPanel.add(yes);
         radioPanel.add(no);
         radioPanel.add(neither);
+
+        yes.setActionCommand("yes");
+        no.setActionCommand("no");
+        neither.setActionCommand("I don't mind");
+
+        ActionListener listenForPickles = e -> {
+
+            pickles = pickleButtonGroup.getSelection().getActionCommand();
+            if (pickles.equals("I don't mind")) {
+                pickles = "NA";
+            }
+        };
+
+        yes.addActionListener(listenForPickles);
+        no.addActionListener(listenForPickles);
+        neither.addActionListener(listenForPickles);
+
 
         mainPanel.add(radioPanel);
 
@@ -200,7 +285,7 @@ public class UserInput {
 
     public JPanel tomatoPanel() {
         JPanel mainPanel = new JPanel();
-        mainPanel.setPreferredSize(new Dimension(500, 100));
+        mainPanel.setPreferredSize(new Dimension(500, 50));
 
         JPanel radioPanel = new JPanel();
 
@@ -213,6 +298,23 @@ public class UserInput {
         tomatoButtonGroup.add(yes);
         tomatoButtonGroup.add(no);
         tomatoButtonGroup.add(neither);
+        tomatoButtonGroup.setSelected(yes.getModel(), true);
+
+        yes.setActionCommand("yes");
+        no.setActionCommand("no");
+        neither.setActionCommand("I don't mind");
+
+        ActionListener theTomatoIsTalking = e -> {
+
+            tomato = tomatoButtonGroup.getSelection().getActionCommand();
+            if (tomato.equals("I don't mind")) {
+                tomato = "NA";
+            }
+        };
+
+        yes.addActionListener(theTomatoIsTalking);
+        no.addActionListener(theTomatoIsTalking);
+        neither.addActionListener(theTomatoIsTalking);
 
         radioPanel.add(pickleLabel);
         radioPanel.add(yes);
@@ -229,6 +331,19 @@ public class UserInput {
 
         meatCombo = new JComboBox<>(Meat.values());
         meatCombo.setPreferredSize(new Dimension(300, 40));
+        meatCombo.setSelectedItem(Meat.NA);
+        meat = (Meat) meatCombo.getSelectedItem();
+
+        meatCombo.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                if (Objects.equals(meatCombo.getSelectedItem(), "Any meat will do...")) {
+                    meat = Meat.NA;
+                }
+                meat = Meat.valueOf(meatCombo.getSelectedItem().toString().toUpperCase());
+            }
+
+        });
+
         mainPanel.add(meatCombo);
 
         return mainPanel;
@@ -240,37 +355,184 @@ public class UserInput {
         JLabel cheeseLabel = new JLabel("Cheese?");
         cheeseCheck = new JCheckBox();
 
+        ChangeListener Nacholistener = e -> cheese = cheeseCheck.isSelected();
+
+        cheeseCheck.addChangeListener(Nacholistener);
+
         mainPanel.add(cheeseLabel);
         mainPanel.add(cheeseCheck);
 
         return mainPanel;
     }
 
-    public JPanel pricePanel() {
-        JPanel mainPanel = new JPanel();
+//    public JPanel pricePanel() {
+//        JPanel mainPanel = new JPanel();
+//
+//        JLabel minPriceLabel = new JLabel("Min Price: ");
+//        minPrice = new JTextField(5);
+//
+//        JLabel maxPriceLabel = new JLabel("Max Price: ");
+//        maxPrice = new JTextField(5);
+//
+//        mainPanel.add(minPriceLabel);
+//        mainPanel.add(minPrice);
+//        mainPanel.add(maxPriceLabel);
+//        mainPanel.add(maxPrice);
+//
+//        return mainPanel;
+//    }
 
-        JLabel minPriceLabel = new JLabel("Min Price: ");
-        minPrice = new JTextField(5);
+    // This was adapted from lecture 10 SearchView.java
+    public JPanel pricePanel(){
+        //labels for the text boxes
+        JLabel minLabel = new JLabel("Min. age");
+        JLabel maxLabel = new JLabel("Max. age");
+        //create text boxes...
+        JTextField min = new JTextField(4);
+        JTextField max = new JTextField(4);
+        //set default values for the age range text boxes (editable)
+        min.setText(String.valueOf(minPrice));
+        max.setText(String.valueOf(maxPrice));
 
-        JLabel maxPriceLabel = new JLabel("Max Price: ");
-        maxPrice = new JTextField(5);
+        //this is how you change the font and size of text
+        feedbackMin.setFont(new Font("", Font. ITALIC, 12));
+        feedbackMin.setForeground(Color.RED);
+        feedbackMax.setFont(new Font("", Font. ITALIC, 12));
+        feedbackMax.setForeground(Color.RED);
 
-        mainPanel.add(minPriceLabel);
-        mainPanel.add(minPrice);
-        mainPanel.add(maxPriceLabel);
-        mainPanel.add(maxPrice);
+        //EDIT 15: let’s add a document listener to the min and max age text fields.
+        //You will see that the insertUpdate, removeUpdate and changedUpdate method declarations will
+        //be automatically added. You must implement these (or leave them blank).
+        //We’ll implement the first two, so that whenever the user enters or removes text from the fields,
+        //we check whether the contents are valid.
+        min.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                //if the check min method returns false, request user addresses invalid input
+                if(!checkMin(min)) min.requestFocus();
+                checkMax(max); //after min has been updated, check max is still valid
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                //removing and inserting should be subjected to the same checks
+                if(!checkMin(min))min.requestFocus();
+                checkMax(max);
+            }
+            @Override
+            public void changedUpdate(DocumentEvent e) {} //NA
+        });
+        max.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                if(!checkMax(max)) max.requestFocusInWindow();
+                checkMin(min);
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                if(!checkMax(max))max.requestFocusInWindow();
+                checkMin(min);
+            }
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
 
-        return mainPanel;
+        //add the text fields and labels to a panel
+        JPanel ageRangePanel = new JPanel(); //flowlayout by default
+        ageRangePanel.add(minLabel);
+        ageRangePanel.add(min);
+        ageRangePanel.add(maxLabel);
+        ageRangePanel.add(max);
+
+        JPanel finalPanel = new JPanel();
+        finalPanel.setBorder(BorderFactory.createTitledBorder("Enter desired age range"));
+        finalPanel.setPreferredSize(new Dimension(300, 100));
+//        finalPanel.setLayout(new BoxLayout(finalPanel,BoxLayout.Y_AXIS)); //stack elements vertically
+//        finalPanel.setAlignmentX(0);
+        finalPanel.add(ageRangePanel);
+        feedbackMin.setAlignmentX(0);
+        feedbackMax.setAlignmentX(0);
+        finalPanel.add(feedbackMin); //feedback below age entry text boxes
+        finalPanel.add(feedbackMax);
+
+        return finalPanel;
     }
+
+    //EDIT 16: to minimize code repetition, let’s outsource the task of validating the user entry to these two methods.
+    //They will return true if input is valid, and false if it isn’t. If input is not valid, we will request that
+    //the user changes their input.
+    /**
+     * validates user input for min age
+     * @param minEntry the JTextField used to enter min age
+     * @return true if valid age, false if invalid
+     */
+    private boolean checkMin(JTextField minEntry){
+        feedbackMin.setText("");
+        try{
+            int tempMin = Integer.parseInt(minEntry.getText());
+            if(tempMin < -1 || tempMin>maxPrice) {
+                feedbackMin.setText("Min age must be >= "+ -1 +" and <= "+maxPrice+". Defaulting to "+minPrice+" - "+maxPrice+".");
+                minEntry.selectAll();
+                return false;
+            }else {
+                minPrice=tempMin;
+                feedbackMin.setText("");
+                return true;
+            }
+        }catch (NumberFormatException n){
+            feedbackMin.setText("Please enter a valid number for min age. Defaulting to "+minPrice+" - "+maxPrice+".");
+            minEntry.selectAll();
+            return false;
+        }
+    }
+
+    /**
+     * validates user input for max age
+     * @param maxEntry the JTextField used to enter max age
+     * @return true if valid age, false if invalid
+     */
+    private boolean checkMax(JTextField maxEntry){
+        feedbackMax.setText("");
+        try{
+            int tempMax = Integer.parseInt(maxEntry.getText());
+            if(tempMax < minPrice) {
+                feedbackMax.setText("Max age must be >= min age. Defaulting to "+minPrice+" - "+maxPrice+".");
+                maxEntry.selectAll();
+                return false;
+            }else {
+                maxPrice = tempMax;
+                feedbackMax.setText("");
+                return true;
+            }
+        }catch (NumberFormatException n){
+            feedbackMax.setText("Please enter a valid number for max age. Defaulting to "+minPrice+" - "+maxPrice+".");
+            maxEntry.selectAll();
+            return false;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void burgerOrSalad(Type typeOfFood) {
 
         if (typeOfFood.equals(Type.BURGER)){
             selectedOption = Type.BURGER;
             bunOrDressingCombo.removeAllItems();
+//            bunOrDressingCombo = new JComboBox<>();
             for (Object s : menu.getAllIngredientTypes(Filter.BUN)) {
                 bunOrDressingCombo.addItem(s.toString());
             }
+            bunOrDressingCombo.setSelectedItem(bunOrDressingCombo.getItemAt(0));
 
             sauceOrGreensModel.removeAllElements();
             for (Sauce s : Sauce.values()) {
@@ -286,6 +548,9 @@ public class UserInput {
             for (Object s : menu.getAllIngredientTypes(Filter.DRESSING)) {
                 bunOrDressingCombo.addItem(s.toString());
             }
+
+//            bunOrDressingCombo = new JComboBox<>(Dressing.values());
+            bunOrDressingCombo.setSelectedItem(Dressing.NA);
 
             sauceOrGreensModel.removeAllElements();
             for (Object s : menu.getAllIngredientTypes(Filter.LEAFY_GREENS)) {
@@ -303,5 +568,89 @@ public class UserInput {
         }
     }
 
+    // Getters
 
+    public String getBun() {
+        return bun;
+    }
+
+    public Set<Object> getSauce() {
+        return sauce;
+    }
+
+    public Set<Object> getLeafy() {
+        return leafy;
+    }
+
+    public Dressing getDressing() {
+        return dressing;
+    }
+
+    public String getCucumber() {
+        return cucumber;
+    }
+
+    public String getPickles() {
+        return pickles;
+    }
+
+    public String getTomato() {
+        return tomato;
+    }
+
+    public Meat getMeat() {
+        return meat;
+    }
+
+    public boolean getCheese() {
+        return cheese;
+    }
+
+    public float getMinPrice() {
+        return minPrice;
+    }
+
+    public float getMaxPrice() {
+        return maxPrice;
+    }
+
+    //    public JTextField getMinPrice() {
+//        return minPrice;
+//    }
+//
+//    public JTextField getMaxPrice() {
+//        return maxPrice;
+//    }
+
+    public JCheckBox getCheeseCheck() {
+        return cheeseCheck;
+    }
+
+    public ButtonGroup getTomatoButtonGroup() {
+        return tomatoButtonGroup;
+    }
+
+    public ButtonGroup getPickleButtonGroup() {
+        return pickleButtonGroup;
+    }
+
+    public ButtonGroup getCucumberButtonGroup() {
+        return cucumberButtonGroup;
+    }
+
+    public JList<Object> getSauceOrGreensList() {
+        return sauceOrGreensList;
+    }
+
+    public JComboBox<Meat> getMeatCombo() {
+        return meatCombo;
+    }
+
+    public JComboBox<Object> getBunOrDressingCombo() {
+        return bunOrDressingCombo;
+    }
+
+    public Type getSelectedOption() {
+        return selectedOption;
+    }
 }

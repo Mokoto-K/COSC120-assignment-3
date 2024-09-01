@@ -17,20 +17,22 @@ public class MenuSearcher {
     private static final String appName = "Eets 4 Gobbledy-Geeks";
 
     // Initialize our default panel to be used throughout the class
+    private static JFrame mainFrame;
     private static JPanel defaultPane = null;
     // Initialize our user input class to be used throughout the class
-    private static UserInput userInput = null;
+//    private static UserInput userInput = null;
+    private static Type type;
 
     public static void main(String[] args) {
         menu = loadMenu(filePath);
 
         // Create the main frame for our gui
-        JFrame mainFrame = new JFrame(appName);
+        mainFrame = new JFrame(appName);
 
         // Set basic settings for our gui
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mainFrame.setIconImage(icon.getImage());
-        mainFrame.setMinimumSize(new Dimension(400, 800));
+        mainFrame.setMinimumSize(new Dimension(400, 900));
 
         // Assign the output of our main panel method to the set content pane method of the JFrame to initialise our gui
         defaultPane = mainPanel();
@@ -47,12 +49,12 @@ public class MenuSearcher {
 
     public static JPanel mainPanel() {
         JPanel mainWindowPanel = new JPanel();
-        userInput = new UserInput(menu);
-        // TODO - Pick a decent layout
+        UserInput userInput = new UserInput(menu);
+
         mainWindowPanel.setLayout(new BorderLayout());
 
         JButton searchButt = new JButton("Search for yo' berger");
-        ActionListener listener = e -> searchForItems();
+        ActionListener listener = e -> searchForItems(userInput);
         searchButt.addActionListener(listener);
 
 //        JLabel mainImage = new JLabel(new ImageIcon("gobbledy_geek_graphic.png"));
@@ -64,17 +66,66 @@ public class MenuSearcher {
         return mainWindowPanel;
     }
 
-    public static void searchForItems() {
+    public static void searchForItems(UserInput userInput) {
+        // Create a new map to hold our customers selections
+        Map<Filter, Object> filtersMap = new HashMap<>();
+
+        // Look to see if a customer has selected which type of meal they would like to order and advise them to pick
+        // one if they haven't yet
+        type = userInput.getSelectedOption();
+        if (type == Type.SELECT) {
+            JOptionPane.showMessageDialog(mainFrame,"Please select either a Burger or Salad to continue. \n",
+                    "Invalid Type of Meal selected", JOptionPane.INFORMATION_MESSAGE, null);
+            return;
+        }
+        // Add the chosen type of meal to the map
+        filtersMap.put(Filter.TYPE, type);
+
+        // Add specific menu only items to the map, ie for burger selection or salad selection
+        if (type.equals(Type.BURGER)) {
+            // Add bun and sauce if the user has chosen burger
+            String bun = userInput.getBun();
+            filtersMap.put(Filter.BUN, bun);
+            Set<Object> sauces = userInput.getSauce();
+            if (!sauces.isEmpty()) {
+                filtersMap.put(Filter.SAUCE_S, sauces);
+            }
+        }
+        else {
+            // Add dressing, cucumber and leafy greens if the user has chosen salad
+            Dressing dressing = userInput.getDressing();
+            filtersMap.put(Filter.DRESSING, dressing);
+            String cucumber = userInput.getCucumber();
+            filtersMap.put(Filter.CUCUMBER, cucumber);
+            Set<Object> leafy = userInput.getLeafy();
+            if (!leafy.isEmpty()) {
+                filtersMap.put(Filter.LEAFY_GREENS, leafy);
+            }
+        }
+
+        String pickles = userInput.getPickles();
+        filtersMap.put(Filter.PICKLES, pickles);
+
+        String tomato = userInput.getTomato();
+        filtersMap.put(Filter.TOMATO, tomato);
+
+        Meat meat = userInput.getMeat();
+        filtersMap.put(Filter.MEAT, meat);
+
+        if (userInput.getCheese()) {
+            filtersMap.put(Filter.CHEESE, "yes");
+        }
+        else {
+            filtersMap.put(Filter.CHEESE, "no");
+        }
+
+        float minimumPrice = userInput.getMinPrice();
+        float maximumPrice = userInput.getMaxPrice();
+
+        DreamMenuItem dreamMenuItem = new DreamMenuItem(filtersMap, minimumPrice, maximumPrice);
+        processSearchResults(dreamMenuItem);
 
     }
-
-
-
-
-
-
-
-
 
     public static DreamMenuItem getFilters(){
 
@@ -179,6 +230,111 @@ public class MenuSearcher {
         }
         return new DreamMenuItem(filterMap,minPrice,maxPrice);
     }
+
+
+//    public static DreamMenuItem getFilters(){
+//
+//        Map<Filter,Object> filterMap = new LinkedHashMap<>();
+//        String[] options = {"Yes", "No", "I don't mind"};
+//
+//        Type type = (Type) JOptionPane.showInputDialog(null,"Which menu item would you like?",appName, JOptionPane.QUESTION_MESSAGE,null, Type.values(), Type.BURGER);
+//        if(type==null)System.exit(0);
+//        filterMap.put(Filter.TYPE,type);
+//
+//        if(type==Type.BURGER) {
+//            Object[] allBuns = menu.getAllIngredientTypes(Filter.BUN).toArray();
+//            String bunType = (String) JOptionPane.showInputDialog(null, "Please select your preferred bun type:", appName, JOptionPane.QUESTION_MESSAGE, icon, allBuns, "");
+//            if (bunType == null) System.exit(0);
+//            if(!bunType.equals(allBuns[allBuns.length-1])) filterMap.put(Filter.BUN, bunType);
+//
+//            Set<Sauce> dreamSauces = new HashSet<>();
+//            int choosingSauces=0;
+//            while(choosingSauces==0) {
+//                Sauce dreamSauce = (Sauce) JOptionPane.showInputDialog(null, "Please select your preferred sauce:", appName, JOptionPane.QUESTION_MESSAGE, icon, Sauce.values(), Sauce.TOMATO);
+//                if (dreamSauce == null) System.exit(0);
+//                if(dreamSauce.equals(Sauce.NA)) {
+//                    dreamSauces=new HashSet<>();
+//                    break;
+//                }
+//                else dreamSauces.add(dreamSauce);
+//                choosingSauces = JOptionPane.showConfirmDialog(null,"Would you like to add another sauce?",appName, JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,icon);
+//                if(choosingSauces==2) System.exit(0);
+//            }
+//            if(dreamSauces.size()>0) filterMap.put(Filter.SAUCE_S,dreamSauces);
+//        }
+//
+//        if(type==Type.SALAD){
+//            Object[] allLeafyGreens = menu.getAllIngredientTypes(Filter.LEAFY_GREENS).toArray();
+//            Set<String> dreamLeafyGreens = new HashSet<>();
+//            int choosingLeafyGreens=0;
+//            while(choosingLeafyGreens==0) {
+//                String leafyGreens = (String) JOptionPane.showInputDialog(null, "Please select your preferred leafy greens:", appName, JOptionPane.QUESTION_MESSAGE, icon, allLeafyGreens, "");
+//                if (leafyGreens == null) System.exit(0);
+//                if(!leafyGreens.equals(allLeafyGreens[allLeafyGreens.length-1])) dreamLeafyGreens.add(leafyGreens);
+//                else break;
+//                choosingLeafyGreens = JOptionPane.showConfirmDialog(null,"Would you like to add another leafy greens choice?",appName, JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,icon);
+//                if(choosingLeafyGreens==2) System.exit(0);
+//            }
+//            if(dreamLeafyGreens.size()>0) filterMap.put(Filter.LEAFY_GREENS, dreamLeafyGreens);
+//
+//            boolean cucumber=false;
+//            int cucumberSelection = JOptionPane.showOptionDialog(null,"Would you like cucumber?",appName, JOptionPane.DEFAULT_OPTION,JOptionPane.QUESTION_MESSAGE,icon,options,options[0]);
+//            if(cucumberSelection==0) cucumber = true;
+//            if(cucumberSelection==-1) System.exit(0);
+//            if(cucumberSelection!=2)filterMap.put(Filter.CUCUMBER, cucumber);
+//
+//            Dressing dressing = (Dressing) JOptionPane.showInputDialog(null, "Please select your preferred dressing:", appName, JOptionPane.QUESTION_MESSAGE, icon, Dressing.values(), Dressing.FRENCH);
+//            if (dressing == null) System.exit(0);
+//            if(!dressing.equals(Dressing.NA)) filterMap.put(Filter.DRESSING, dressing);
+//        }
+//
+//        Meat dreamMeat = (Meat) JOptionPane.showInputDialog(null,"Please select your preferred meat:",appName, JOptionPane.QUESTION_MESSAGE,icon, Meat.values(), Meat.BEEF);
+//        if(dreamMeat==null)System.exit(0);
+//        if(!dreamMeat.equals(Meat.NA)) filterMap.put(Filter.MEAT,dreamMeat);
+//
+//        boolean cheese=false;
+//        int cheeseSelection = JOptionPane.showConfirmDialog(null,"Would you like cheese?",appName, JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,icon);
+//        if(cheeseSelection==0) cheese = true;
+//        if(cheeseSelection==-1) System.exit(0);
+//        filterMap.put(Filter.CHEESE, cheese);
+//
+//        boolean tomato=false;
+//        int tomatoSelection = JOptionPane.showOptionDialog(null,"Would you like tomato?",appName, JOptionPane.DEFAULT_OPTION,JOptionPane.QUESTION_MESSAGE,icon,options,options[0]);
+//        if(tomatoSelection==0) tomato=true;
+//        if(tomatoSelection==-1) System.exit(0);
+//        if(tomatoSelection!=2) filterMap.put(Filter.TOMATO, tomato);
+//
+//        boolean pickle=false;
+//        int pickleSelection = JOptionPane.showOptionDialog(null,"Would you like pickles?",appName, JOptionPane.DEFAULT_OPTION,JOptionPane.QUESTION_MESSAGE,icon,options,options[0]);
+//        if(pickleSelection==0) pickle = true;
+//        if(pickleSelection==-1) System.exit(0);
+//        if(pickleSelection!=2)filterMap.put(Filter.PICKLES, pickle);
+//
+//        int minPrice=-1,maxPrice = -1;
+//        while(minPrice<0) {
+//            String userInput = JOptionPane.showInputDialog(null, "Please enter the lowest price", appName, JOptionPane.QUESTION_MESSAGE);
+//            if(userInput==null)System.exit(0);
+//            try {
+//                minPrice = Integer.parseInt(userInput);
+//                if(minPrice<0) JOptionPane.showMessageDialog(null,"Price must be >= 0.",appName, JOptionPane.ERROR_MESSAGE);
+//            }
+//            catch (NumberFormatException e){
+//                JOptionPane.showMessageDialog(null,"Invalid input. Please try again.", appName, JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
+//        while(maxPrice<minPrice) {
+//            String userInput = JOptionPane.showInputDialog(null, "Please enter the highest price", appName, JOptionPane.QUESTION_MESSAGE);
+//            if(userInput==null)System.exit(0);
+//            try {
+//                maxPrice = Integer.parseInt(userInput);
+//                if(maxPrice<minPrice) JOptionPane.showMessageDialog(null,"Price must be >= "+minPrice,appName, JOptionPane.ERROR_MESSAGE);
+//            }
+//            catch (NumberFormatException e){
+//                JOptionPane.showMessageDialog(null,"Invalid input. Please try again.", appName, JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
+//        return new DreamMenuItem(filterMap,minPrice,maxPrice);
+//    }
 
     public static void processSearchResults(DreamMenuItem dreamMenuItem){
         List<MenuItem> matching = menu.findMatch(dreamMenuItem);
