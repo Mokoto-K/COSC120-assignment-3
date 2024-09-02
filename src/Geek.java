@@ -1,7 +1,13 @@
+/**
+ * @author -
+ * Email -
+ * created for COSC120 Assignment 3
+ * A Programed solution adding more funtionality and a graphical interface for the good people at the
+ * gobbledy geek eatery
+ */
+// TODO - turn this into a record
 public class Geek {
-    /**
-     * Created by Dr Andreas Shepley for COSC120 on 03/07/2023
-     */
+
     private final String name;
     private final long orderNumber;
 

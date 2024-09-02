@@ -1,3 +1,11 @@
+/**
+ * @author -
+ * Email -
+ * created for COSC120 Assignment 3
+ * A Programed solution adding more funtionality and a graphical interface for the good people at the
+ * gobbledy geek eatery
+ */
+
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -25,7 +33,10 @@ public class UserInput {
     private float maxPrice = 80;
 
 //    private
-
+    private JTextField name;
+    private JTextField email;
+    private JTextField phoneNumber;
+    private JTextArea message;
 
 
     private JLabel bunOrSauceLabel;
@@ -153,9 +164,6 @@ public class UserInput {
 
         ActionListener listener = e -> {
             cucumber = cucumberButtonGroup.getSelection().getActionCommand();
-            if (cucumber.equals("I don't mind")) {
-                cucumber = "NA";
-            }
         };
         yes.addActionListener(listener);
         no.addActionListener(listener);
@@ -167,11 +175,17 @@ public class UserInput {
         bunOrDressingCombo.addItem("Select Item");
         bunOrDressingCombo.setEnabled(false);
 
+
         // Add an item listener to help pass which option was selected for sauce or dressing
         bunOrDressingCombo.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 if (selectedOption == Type.BURGER) {
                     bun = (String) bunOrDressingCombo.getSelectedItem();
+                    assert bun != null;
+                    if (bun.equals("I don't mind")) {
+                        bun = "NA";
+                    }
+
                 }
                 else {
                     if (bunOrDressingCombo.getSelectedItem().toString().equals("I don't mind...")) {
@@ -268,9 +282,6 @@ public class UserInput {
         ActionListener listenForPickles = e -> {
 
             pickles = pickleButtonGroup.getSelection().getActionCommand();
-            if (pickles.equals("I don't mind")) {
-                pickles = "NA";
-            }
         };
 
         yes.addActionListener(listenForPickles);
@@ -307,9 +318,6 @@ public class UserInput {
         ActionListener theTomatoIsTalking = e -> {
 
             tomato = tomatoButtonGroup.getSelection().getActionCommand();
-            if (tomato.equals("I don't mind")) {
-                tomato = "NA";
-            }
         };
 
         yes.addActionListener(theTomatoIsTalking);
@@ -331,12 +339,13 @@ public class UserInput {
 
         meatCombo = new JComboBox<>(Meat.values());
         meatCombo.setPreferredSize(new Dimension(300, 40));
-        meatCombo.setSelectedItem(Meat.BEEF.toString().toLowerCase());
+        meatCombo.setSelectedItem(Meat.BEEF);
         meat = (Meat) meatCombo.getSelectedItem();
 
         meatCombo.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 meat = (Meat) meatCombo.getSelectedItem();
+
             }
         });
 
@@ -360,23 +369,6 @@ public class UserInput {
 
         return mainPanel;
     }
-
-//    public JPanel pricePanel() {
-//        JPanel mainPanel = new JPanel();
-//
-//        JLabel minPriceLabel = new JLabel("Min Price: ");
-//        minPrice = new JTextField(5);
-//
-//        JLabel maxPriceLabel = new JLabel("Max Price: ");
-//        maxPrice = new JTextField(5);
-//
-//        mainPanel.add(minPriceLabel);
-//        mainPanel.add(minPrice);
-//        mainPanel.add(maxPriceLabel);
-//        mainPanel.add(maxPrice);
-//
-//        return mainPanel;
-//    }
 
     // This was adapted from lecture 10 SearchView.java
     public JPanel pricePanel(){
@@ -507,17 +499,51 @@ public class UserInput {
         }
     }
 
+    // Adapted for FindAPet.java Tutorial 10
+    public JPanel contactForm(){
+        //create labels and text fields for users to enter contact info and message
+        JLabel enterName = new JLabel("Full name");
+        name = new JTextField(12);
+        JLabel enterEmail = new JLabel("Email address");
+        email = new JTextField(12);
+        JLabel enterPhoneNumber = new JLabel("Phone number");
+        phoneNumber = new JTextField(12);
+        JLabel enterMessage = new JLabel("Type your query below");
+        message = new JTextArea(6,12);
+        //add input validation for above fields
 
+        JScrollPane jScrollPane = new JScrollPane(message);
+        jScrollPane.getViewport().setPreferredSize(new Dimension(250,100));
 
-
-
-
-
-
-
-
-
-
+        //create a new panel, add padding and user entry boxes/messages to the panel
+        JPanel userInputPanel = new JPanel();
+        userInputPanel.setLayout(new BoxLayout(userInputPanel,BoxLayout.Y_AXIS));
+        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        userInputPanel.setAlignmentX(0);
+        enterName.setAlignmentX(0);
+        name.setAlignmentX(0);
+        userInputPanel.add(enterName);
+        userInputPanel.add(name);
+        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        enterEmail.setAlignmentX(0);
+        email.setAlignmentX(0);
+        userInputPanel.add(enterEmail);
+        userInputPanel.add(email);
+        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        enterPhoneNumber.setAlignmentX(0);
+        phoneNumber.setAlignmentX(0);
+        userInputPanel.add(enterPhoneNumber);
+        userInputPanel.add(phoneNumber);
+        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        enterMessage.setAlignmentX(0);
+        message.setAlignmentX(0);
+        userInputPanel.add(enterMessage);
+        jScrollPane.setAlignmentX(0);
+        userInputPanel.add(jScrollPane);
+        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        //return the panel to the calling method - could be either the send-message or adoption-request
+        return userInputPanel;
+    }
 
     public void burgerOrSalad(Type typeOfFood) {
 
@@ -610,40 +636,20 @@ public class UserInput {
         return maxPrice;
     }
 
-    //    public JTextField getMinPrice() {
-//        return minPrice;
-//    }
-//
-//    public JTextField getMaxPrice() {
-//        return maxPrice;
-//    }
-
-    public JCheckBox getCheeseCheck() {
-        return cheeseCheck;
+    public String getName() {
+        return name.getText();
     }
 
-    public ButtonGroup getTomatoButtonGroup() {
-        return tomatoButtonGroup;
+    public String getEmail() {
+        return email.getText();
     }
 
-    public ButtonGroup getPickleButtonGroup() {
-        return pickleButtonGroup;
+    public String getPhoneNumber() {
+        return phoneNumber.getText();
     }
 
-    public ButtonGroup getCucumberButtonGroup() {
-        return cucumberButtonGroup;
-    }
-
-    public JList<Object> getSauceOrGreensList() {
-        return sauceOrGreensList;
-    }
-
-    public JComboBox<Meat> getMeatCombo() {
-        return meatCombo;
-    }
-
-    public JComboBox<Object> getBunOrDressingCombo() {
-        return bunOrDressingCombo;
+    public String getMessage() {
+        return message.getText();
     }
 
     public Type getSelectedOption() {

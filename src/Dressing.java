@@ -1,9 +1,20 @@
+/**
+ * @author -
+ * Email -
+ * created for COSC120 Assignment 3
+ * A Programed solution adding more funtionality and a graphical interface for the good people at the
+ * gobbledy geek eatery
+ */
+
+// An Enum representing Dressings  for a salade
 public enum Dressing {
-    /**
-     * Created by Dr Andreas Shepley for COSC120 on 03/07/2023
-     */
+
     RANCH,FRENCH,ITALIAN,GREEN_GODDESS,NA;
 
+    /**
+     *
+     * @return a prettified version of the case that is selected by the user.
+     */
     public String toString(){
         return switch (this) {
             case RANCH -> "Ranch";

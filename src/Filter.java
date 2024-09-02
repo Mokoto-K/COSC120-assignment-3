@@ -1,9 +1,21 @@
+/**
+ * @author -
+ * Email -
+ * created for COSC120 Assignment 3
+ * A Programed solution adding more funtionality and a graphical interface for the good people at the
+ * gobbledy geek eatery
+ */
+
+// An Enum class repreenting all possible options for items to put on a burger or on a salad, used as keys in a map
+// to keep track of items in the database
 public enum Filter {
-    /**
-     * Created by Dr Andreas Shepley for COSC120 on 03/07/2023
-     */
+
     TYPE,BUN,MEAT,CHEESE,PICKLES,CUCUMBER,TOMATO,DRESSING,LEAFY_GREENS,SAUCE_S;
 
+    /**
+     *
+     * @return a prettified version of the case that is selected by the user.
+     */
     public String toString(){
         return switch (this) {
             case TYPE -> "Menu item type";

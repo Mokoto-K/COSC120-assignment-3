@@ -1,9 +1,15 @@
+/**
+ * @author -
+ * Email -
+ * created for COSC120 Assignment 3
+ * A Programed solution adding more funtionality and a graphical interface for the good people at the
+ * gobbledy geek eatery
+ */
+
 import java.util.*;
 
 public class DreamMenuItem {
-    /**
-     * Created by Dr Andreas Shepley for COSC120 on 03/07/2023
-     */
+
     private final Map<Filter,Object> filterMap;
     private final float minPrice;
     private final float maxPrice;
@@ -75,10 +81,10 @@ public class DreamMenuItem {
                 }
                 // Comparing if the users dream plants value is a collection but the database plant is not
                 else if (dreamMenuItem.getFilter(key) instanceof Collection<?> && !(this.getFilter(key) instanceof Collection<?>)) {
-                    System.out.println("3 " + key + " " + dreamMenuItem.getFilter(key));
+
                     // return false if the database plants attribute is not in the user's plants collection
                     if (!((Collection<?>) dreamMenuItem.getFilter(key)).contains(this.getFilter(key))) {
-                        System.out.println("Secrect");
+                        System.out.println("3 " + key + " " + dreamMenuItem.getFilter(key) + " " + this.getFilter(key).getClass() );
                         return false;
                     }
                 }
@@ -106,14 +112,21 @@ public class DreamMenuItem {
 
 
 //        for(Filter key : dreamMenuItem.getAllFilters().keySet()) {
+//            System.out.println(dreamMenuItem.getAllFilters());
+//            System.out.println(this.getAllFilters());
 //            if(this.getAllFilters().containsKey(key)){
 //                if(getFilter(key) instanceof Collection<?> && dreamMenuItem.getFilter(key) instanceof Collection<?>){
+//                    System.out.println("1 " + key + " " + dreamMenuItem.getFilter(key));
 //                    Set<Object> intersect = new HashSet<>((Collection<?>) dreamMenuItem.getFilter(key));
 //                    intersect.retainAll((Collection<?>) getFilter(key));
 //                    if(intersect.size()==0) return false;
 //                }
 //                else{
-//                    if(!this.getFilter(key).equals(dreamMenuItem.getFilter(key))) return false;
+//                    if(!this.getFilter(key).equals(dreamMenuItem.getFilter(key))){
+//                        System.out.println("2 " + key + " " + dreamMenuItem.getFilter(key));
+//                        return false;
+//                    }
+//
 //                }
 //            }
 //        }

@@ -1,8 +1,12 @@
-import java.text.DecimalFormat;
-
 /**
- * Created by Dr Andreas Shepley for COSC120 on 03/07/2023
+ * @author -
+ * Email -
+ * created for COSC120 Assignment 3
+ * A Programed solution adding more funtionality and a graphical interface for the good people at the
+ * gobbledy geek eatery
  */
+
+import java.text.DecimalFormat;
 
 public class MenuItem {
 
@@ -54,4 +58,6 @@ public class MenuItem {
         if(price==-1) return output;
         else return output+"\nPrice: $"+df.format(this.getPrice());
     }
+
+
 }
