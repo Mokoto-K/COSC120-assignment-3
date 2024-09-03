@@ -107,7 +107,7 @@ public class UserInput {
         // Set all the parameters for the panel
         meal.setLayout(new BoxLayout(meal,BoxLayout.Y_AXIS));
         meal.setBorder(BorderFactory.createTitledBorder("Would you like a boigur or swalid?"));
-//        meal.setPreferredSize(new Dimension(400, 100));
+
 
         // Create a combobox and populate it with all options from the type enum
         JComboBox<Type> typesOfMeals = new JComboBox<>(Type.values());
@@ -143,31 +143,8 @@ public class UserInput {
 
         JPanel comboAndListPane = new JPanel();
         comboAndListPane.setPreferredSize(new Dimension(300, 200));
+
         JPanel comboPane = new JPanel();
-
-        aCuccumberRadio = new JPanel();
-        aCuccumberRadio.setVisible(false);
-
-        cucumberButtonGroup = new ButtonGroup();
-        JLabel cucumberLabel = new JLabel("Cucumber?");
-        JRadioButton yes = new JRadioButton("Yes");
-        JRadioButton no = new JRadioButton("No");
-        JRadioButton neither = new JRadioButton("I don't mind");
-        cucumberButtonGroup.add(yes);
-        cucumberButtonGroup.add(no);
-        cucumberButtonGroup.add(neither);
-        cucumberButtonGroup.setSelected(yes.getModel(), true);
-
-        yes.setActionCommand("yes");
-        no.setActionCommand("no");
-        neither.setActionCommand("I don't mind");
-
-        ActionListener listener = e -> {
-            cucumber = cucumberButtonGroup.getSelection().getActionCommand();
-        };
-        yes.addActionListener(listener);
-        no.addActionListener(listener);
-        neither.addActionListener(listener);
 
         JLabel bunOrDressingLabel = new JLabel(" ");
         bunOrDressingCombo = new JComboBox<>();
@@ -195,6 +172,31 @@ public class UserInput {
                 }
             }
         });
+
+        aCuccumberRadio = new JPanel();
+        aCuccumberRadio.setVisible(false);
+
+        cucumberButtonGroup = new ButtonGroup();
+        JLabel cucumberLabel = new JLabel("Cucumber?");
+        JRadioButton yes = new JRadioButton("Yes");
+        JRadioButton no = new JRadioButton("No");
+        JRadioButton neither = new JRadioButton("I don't mind");
+        cucumberButtonGroup.add(yes);
+        cucumberButtonGroup.add(no);
+        cucumberButtonGroup.add(neither);
+        cucumberButtonGroup.setSelected(neither.getModel(), true);
+
+        yes.setActionCommand("yes");
+        no.setActionCommand("no");
+        neither.setActionCommand("I don't mind");
+
+        cucumber = cucumberButtonGroup.getSelection().getActionCommand();
+        ActionListener listener = e -> {
+            cucumber = cucumberButtonGroup.getSelection().getActionCommand();
+        };
+        yes.addActionListener(listener);
+        no.addActionListener(listener);
+        neither.addActionListener(listener);
 
         aCuccumberRadio.add(cucumberLabel);
         aCuccumberRadio.add(yes);
@@ -253,12 +255,19 @@ public class UserInput {
         return comboAndListPane;
     }
 
+    /**
+     * Method that creates a set of radio buttons and returns them on a panel
+     * @return a panel including the radio buttons for selection of pickles
+     */
     public JPanel picklePanel() {
+        // Create the main panel
         JPanel mainPanel = new JPanel();
         mainPanel.setPreferredSize(new Dimension(500, 50));
 
+        // Create a panel to hold the radio buttons
         JPanel radioPanel = new JPanel();
 
+        // Assign the pickle button group to a button group and add all of the options to the button group
         pickleButtonGroup = new ButtonGroup();
         JLabel pickleLabel = new JLabel("Pickles?");
         JRadioButton yes = new JRadioButton("yes");
@@ -268,38 +277,51 @@ public class UserInput {
         pickleButtonGroup.add(yes);
         pickleButtonGroup.add(no);
         pickleButtonGroup.add(neither);
-        pickleButtonGroup.setSelected(yes.getModel(), true);
+        pickleButtonGroup.setSelected(neither.getModel(), true);
 
+        // Add the options to the radio panel
         radioPanel.add(pickleLabel);
         radioPanel.add(yes);
         radioPanel.add(no);
         radioPanel.add(neither);
 
+        // Set the action commands for the buttons
         yes.setActionCommand("yes");
         no.setActionCommand("no");
         neither.setActionCommand("I don't mind");
 
-        ActionListener listenForPickles = e -> {
+        // Set the default value
+        pickles = pickleButtonGroup.getSelection().getActionCommand();
 
+        // Create an action listener to list for changes from the customer
+        ActionListener listenForPickles = e -> {
             pickles = pickleButtonGroup.getSelection().getActionCommand();
         };
 
+        // Add the listener to the buttons
         yes.addActionListener(listenForPickles);
         no.addActionListener(listenForPickles);
         neither.addActionListener(listenForPickles);
 
-
+        // Add the radio panel to the main panel
         mainPanel.add(radioPanel);
 
         return mainPanel;
     }
 
+    /**
+     * Method that creates a set of radio buttons and returns them on a panel
+     * @return a panel including the radio buttons for selection of tomatoes
+     */
     public JPanel tomatoPanel() {
+        // Create the main panel
         JPanel mainPanel = new JPanel();
         mainPanel.setPreferredSize(new Dimension(500, 50));
 
+        // Create a panel to hold the radio buttons
         JPanel radioPanel = new JPanel();
 
+        // Assign the tomato button group to a button group and add all the options to the button group
         tomatoButtonGroup = new ButtonGroup();
         JLabel pickleLabel = new JLabel("Tomato?");
         JRadioButton yes = new JRadioButton("Yes");
@@ -309,26 +331,34 @@ public class UserInput {
         tomatoButtonGroup.add(yes);
         tomatoButtonGroup.add(no);
         tomatoButtonGroup.add(neither);
-        tomatoButtonGroup.setSelected(yes.getModel(), true);
+        tomatoButtonGroup.setSelected(neither.getModel(), true);
 
+        // Set the action commands for the buttons
         yes.setActionCommand("yes");
         no.setActionCommand("no");
         neither.setActionCommand("I don't mind");
 
+        // Set the default value
+        tomato = tomatoButtonGroup.getSelection().getActionCommand();
+
+        // Create an action listener to list for changes from the customer
         ActionListener theTomatoIsTalking = e -> {
 
             tomato = tomatoButtonGroup.getSelection().getActionCommand();
         };
 
+        // Add the listener to the buttons
         yes.addActionListener(theTomatoIsTalking);
         no.addActionListener(theTomatoIsTalking);
         neither.addActionListener(theTomatoIsTalking);
 
+        // Add the buttons to the radio panel
         radioPanel.add(pickleLabel);
         radioPanel.add(yes);
         radioPanel.add(no);
         radioPanel.add(neither);
 
+        // Add the radio panel to the main panel
         mainPanel.add(radioPanel);
 
         return mainPanel;
@@ -354,16 +384,27 @@ public class UserInput {
         return mainPanel;
     }
 
+    /**
+     * Method that returns a panel containing a check box for the cheese selection
+     * @return - A panel for the cheese selection
+     */
     public JPanel cheesePanel() {
+        // Create the main panel
         JPanel mainPanel = new JPanel();
 
+        // Create the label for the cheese
         JLabel cheeseLabel = new JLabel("Cheese?");
+
+        // Assign the cheese check box to a new check box
         cheeseCheck = new JCheckBox();
 
+        // Listen for the users selection
         ChangeListener Nacholistener = e -> cheese = cheeseCheck.isSelected();
 
+        // Add the listener
         cheeseCheck.addChangeListener(Nacholistener);
 
+        // Add the items to the main panel
         mainPanel.add(cheeseLabel);
         mainPanel.add(cheeseCheck);
 
@@ -504,19 +545,23 @@ public class UserInput {
         //create labels and text fields for users to enter contact info and message
         JLabel enterName = new JLabel("Full name");
         name = new JTextField(12);
+        name.setPreferredSize(new Dimension(100, 40));
         JLabel enterEmail = new JLabel("Email address");
         email = new JTextField(12);
+        email.setPreferredSize(new Dimension(100, 40));
         JLabel enterPhoneNumber = new JLabel("Phone number");
         phoneNumber = new JTextField(12);
+        phoneNumber.setPreferredSize(new Dimension(100, 40));
         JLabel enterMessage = new JLabel("Type your query below");
         message = new JTextArea(6,12);
         //add input validation for above fields
 
         JScrollPane jScrollPane = new JScrollPane(message);
-        jScrollPane.getViewport().setPreferredSize(new Dimension(250,100));
+//        jScrollPane.getViewport().setPreferredSize(new Dimension(250,100));
 
         //create a new panel, add padding and user entry boxes/messages to the panel
         JPanel userInputPanel = new JPanel();
+//        userInputPanel.setPreferredSize(new Dimension(400, 400));
         userInputPanel.setLayout(new BoxLayout(userInputPanel,BoxLayout.Y_AXIS));
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
         userInputPanel.setAlignmentX(0);
@@ -590,68 +635,140 @@ public class UserInput {
         }
     }
 
+
+
+
+
+
+
+
+
     // Getters
 
+    /**
+     * Gets the bun selected
+     * @return The selected Bun
+     */
     public String getBun() {
         return bun;
     }
 
+    /**
+     * Gets the sauce selected
+     * @return The selected sauce
+     */
     public Set<Object> getSauce() {
         return sauce;
     }
 
+    /**
+     * Gets the Leafy greens selected
+     * @return The selected leafy greens
+     */
     public Set<Object> getLeafy() {
         return leafy;
     }
 
+    /**
+     * Gets the dressing selected
+     * @return The selected dressing
+     */
     public Dressing getDressing() {
         return dressing;
     }
 
+    /**
+     * Gets the cucumber selected
+     * @return The selected cucumber
+     */
     public String getCucumber() {
         return cucumber;
     }
 
+    /**
+     * Gets the pickles selected
+     * @return The selected pickles option
+     */
     public String getPickles() {
         return pickles;
     }
 
+    /**
+     * Gets the tomato selected
+     * @return The selected tomato option
+     */
     public String getTomato() {
         return tomato;
     }
 
+    /**
+     * Gets the meat selected
+     * @return The selected meat
+     */
     public Meat getMeat() {
         return meat;
     }
 
+    /**
+     * Gets the cheese selected
+     * @return The selected cheeese option
+     */
     public boolean getCheese() {
         return cheese;
     }
 
+    /**
+     * Gets the min price
+     * @return The min price
+     */
     public float getMinPrice() {
         return minPrice;
     }
 
+    /**
+     * Gets the mac price
+     * @return The max price
+     */
     public float getMaxPrice() {
         return maxPrice;
     }
 
+    /**
+     * Gets the users name
+     * @return The users name
+     */
     public String getName() {
         return name.getText();
     }
 
+    /**
+     * Gets the bun selected
+     * @return The selected Bun
+     */
     public String getEmail() {
         return email.getText();
     }
 
+    /**
+     * Gets the user phone number
+     * @return The users phone number
+     */
     public String getPhoneNumber() {
         return phoneNumber.getText();
     }
 
+    /**
+     * Gets the custom message
+     * @return The message
+     */
     public String getMessage() {
         return message.getText();
     }
 
+    /**
+     * Gets the selected item type
+     * @return The selected item type
+     */
     public Type getSelectedOption() {
         return selectedOption;
     }
