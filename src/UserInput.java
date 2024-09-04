@@ -16,6 +16,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserInput {
 
@@ -54,6 +56,8 @@ public class UserInput {
     private static JCheckBox cheeseCheck;
     private final JLabel feedbackMin = new JLabel(" "); //set to blank to start with
     private final JLabel feedbackMax = new JLabel(" ");
+    private final JLabel feedbackName = new JLabel(" ");
+    private final JLabel feedbackNumber = new JLabel(" ");
 
     // A variable to keep track of the selected type of meal, burger, salad
     private Type selectedOption;
@@ -654,13 +658,64 @@ public class UserInput {
     public JPanel orderForm(){
         // Create the labels and text fields for the order form, i.e Name, number, customer order
         JLabel enterName = new JLabel("Full name");
-        name = new JTextField(12);
-        name.setPreferredSize(new Dimension(100, 40));
         JLabel enterPhoneNumber = new JLabel("Phone number");
-        phoneNumber = new JTextField(12);
-        phoneNumber.setPreferredSize(new Dimension(100, 40));
         JLabel enterMessage = new JLabel("Any additional information?");
+
+        name = new JTextField(12);
+        phoneNumber = new JTextField(12);
         customMessage = new JTextArea(6,12);
+
+        name.setPreferredSize(new Dimension(100, 40));
+        phoneNumber.setPreferredSize(new Dimension(100, 40));
+
+        feedbackName.setFont(new Font("", Font. ITALIC, 12));
+        feedbackName.setForeground(Color.RED);
+        feedbackNumber.setFont(new Font("", Font. ITALIC, 12));
+        feedbackNumber.setForeground(Color.RED);
+
+        // Create a document listener for the min price, this will monitor the text field input for the min price
+        // and update the feedback label with instructions for the user.
+        name.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                // If the check max method returns false, request user addresses the invalid input
+                if(!checkName(name)) name.requestFocus();
+
+                // Check the max after the min has been updated
+//                checkNumber(phoneNumber);
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                // removing and inserting should be subjected to the same checks
+                if(!checkName(name))name.requestFocus();
+                // Check the max after the min has been updated
+//                checkNumber(phoneNumber);
+            }
+            @Override
+            public void changedUpdate(DocumentEvent e) {} //NA
+        });
+
+        // Create a document listener for the max price, this will monitor the text field input for the max price
+        // and update the feedback label with instructions for the user.
+        phoneNumber.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                // If the check max method returns false, request user addresses the invalid input
+                if(!checkNumber(phoneNumber)) phoneNumber.requestFocusInWindow();
+                // Check the min after the max has been updated
+//                checkName(name);
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                if(!checkNumber(phoneNumber))phoneNumber.requestFocusInWindow();
+                // Check the min after the max has been updated
+//                checkName(name);
+            }
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
+
 
         // ScrollPane to hold the custom message for the order
         JScrollPane jScrollPane = new JScrollPane(customMessage);
@@ -679,6 +734,8 @@ public class UserInput {
         userInputPanel.add(enterName);
         userInputPanel.add(name);
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        userInputPanel.add(feedbackName);
+        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
 
         // Align and add the Phone number components
         enterPhoneNumber.setAlignmentX(0);
@@ -686,6 +743,7 @@ public class UserInput {
         userInputPanel.add(enterPhoneNumber);
         userInputPanel.add(phoneNumber);
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        userInputPanel.add(feedbackNumber);
 
         // Align and add the CustomMessage components
         enterMessage.setAlignmentX(0);
@@ -697,6 +755,104 @@ public class UserInput {
 
         return userInputPanel;
     }
+
+    /**
+     * Adapted from lecture 10 SearchView.java, checkMin lines 372 - 391: Besides change ints to floats, Only variables
+     * and comments were changed
+
+     * Validates user input for the min price range
+     * @param nameEntry the JTextField used to enter the minimum price
+     * @return true if valid price, false if invalid
+     */
+    private boolean checkName(JTextField nameEntry){
+        // Initialise the feedback string to an empty string
+        feedbackName.setText("");
+
+        // Try to parse the users input and set the feedback text field to help them make a better input choice
+
+            if(!isValidFullName(name.getText())) {
+                feedbackName.setText("Please make sure to enter your Full name Starting with a Capital letter");
+                nameEntry.selectAll();
+                return false;
+            }else {
+//
+                feedbackName.setText("Correct Input detected");
+                feedbackName.setFont(new Font("", Font. ITALIC, 12));
+                feedbackName.setForeground(Color.BLUE);
+                return true;
+        }
+    }
+
+    /**
+     * Adapted from my Assignment 2 - ItemSearcher.java lines 505 - 515
+     * Compares a given string against a predetermined sequence of charters to determine if
+     * customer input is correct. In this case the format of the users first and last name
+     * @param fullName - User input of their first and last name
+     * @return boolean True of False whether the input matched the required format
+     */
+    public boolean isValidFullName(String fullName) {
+
+        Pattern pattern = Pattern.compile("^([A-Z][a-z '.-]*(\\s))+[A-Z][a-z '.-]*$");
+
+        // Match the users input against the required format
+        Matcher matcher = pattern.matcher(fullName);
+
+        // Return the result
+        return matcher.matches();
+    }
+
+    /**
+     * Adapted from lecture 10 SearchView.java  checkMin lines 392 - 415: Besides change ints to floats, Only variables
+     * and comments were changed
+
+     * validates user input for the max price range
+     * @param maxEntry the JTextField used to enter the maximum price
+     * @return true if valid price, false if invalid
+     */
+    private boolean checkNumber(JTextField maxEntry){
+        // Initialise the feedback string to an empty string
+        feedbackMax.setText("");
+
+        // Try to parse the users input and set the feedback text field to help them make a better input choice
+        try{
+            float tempMax = Float.parseFloat(maxEntry.getText());
+            if(tempMax < minPrice) {
+                feedbackMax.setText("Max price must be >= min price. Defaulting to "+minPrice+" - "+maxPrice+".");
+                maxEntry.selectAll();
+                return false;
+            }else {
+                maxPrice = tempMax;
+                feedbackMax.setText("");
+                return true;
+            }
+            // If they don't enter a number, let them know the price will default
+        }catch (NumberFormatException n){
+            feedbackMax.setText("Please enter a valid number for max price. Defaulting to "+minPrice+" - "+maxPrice+".");
+            maxEntry.selectAll();
+            return false;
+        }
+    }
+
+    /**
+     * * Adapted from my Assignment 2 - ItemSearcher.java lines 525 - 545
+     * Compares a given string against a predetermined sequence of charters to determine if
+     * customer input is correct. In this case the format of a phone number
+     * @param phoneNumber - customer phone number asked to be input
+     * @return boolean True of False whether the input matched the required format
+     */
+    public boolean isValidPhoneNumber(String phoneNumber) {
+        // Create a pattern object containing the required format
+        // is 10 digits starting with 04
+        Pattern pattern = Pattern.compile("^04\\d{8}$");
+
+        // Match the users input against the required format
+        Matcher matcher = pattern.matcher(phoneNumber);
+
+        // Return the result
+        return matcher.matches();
+    }
+
+
 
     /**
      * Method that sets which ingredients are available to choose from relating to menu specific items. Sets a combo

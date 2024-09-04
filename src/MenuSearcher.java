@@ -14,7 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
-// TODO - Fix letters in price boxes still searches
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 // TODO - Add modular Feedback for name an phonenumber input
 // TODO - Add validchecks for name and phone number
 
@@ -558,6 +560,7 @@ public class MenuSearcher {
      * @param chosenMeal - The users selected meal they would like to order
      */
     public static void placeOrder(MenuItem chosenMeal){
+
         // Title for the top of the window including the name of the meal and instructions for the customer
         JLabel paneTitle = new JLabel("To place an order for a "+chosenMeal.menuItemName()+" Please enter your details below  ");
 
@@ -603,10 +606,16 @@ public class MenuSearcher {
         // The listener and the string that will be sent to be turned into a txtfile for ordering
         ActionListener actionListener = e -> {
 
-            String lineToWrite = "Order Details: \n" + "\tName: " + userInput.getName() + " (" + userInput.getPhoneNumber()
-                    + ")\n\t" + "\tItem: " + chosenMeal.menuItemName() + "(" + chosenMeal.menuItemIdentifier() + ")" +
-                    "\n\nCustomisation: " + userInput.getMessage();
-            createCustomerOrderFile(lineToWrite);
+            if (userInput.isValidFullName(userInput.getName()) && userInput.isValidPhoneNumber(userInput.getPhoneNumber())) {
+                String lineToWrite = "Order Details: \n" + "\tName: " + userInput.getName() + " (" + userInput.getPhoneNumber()
+                        + ")\n\t" + "\tItem: " + chosenMeal.menuItemName() + "(" + chosenMeal.menuItemIdentifier() + ")" +
+                        "\n\nCustomisation: " + userInput.getMessage();
+                createCustomerOrderFile(lineToWrite);
+            } else {
+                JOptionPane.showMessageDialog(mainFrame, "Please Enter your Full Name and Phone Number \n" +
+                        "to place an order", "Error In your Information", JOptionPane.INFORMATION_MESSAGE, icon);
+            }
+
         };
 
         submit.addActionListener(actionListener);
@@ -666,9 +675,6 @@ public class MenuSearcher {
         itemDescription.setWrapStyleWord(true);
         return itemDescription;
     }
-
-
-
 
 }
 
