@@ -34,12 +34,12 @@ public class Menu {
         for(MenuItem menuItem: menu){
 
             // For all the items, get only the attribute that is equal to the filter passed in, i.e sauce, bun, cheese
-            if(menuItem.getDreamMenuItem().getAllFilters().containsKey(filter)){
-                var ingredientTypes = menuItem.getDreamMenuItem().getFilter(filter);
+            if(menuItem.dreamMenuItem().getAllFilters().containsKey(filter)){
+                var ingredientTypes = menuItem.dreamMenuItem().getFilter(filter);
 
                 // Add all the items in the selected Filter if it's a collection, else just add the individual value
                 if(ingredientTypes instanceof Collection<?>) allSubtypes.addAll((Collection<?>) ingredientTypes);
-                else allSubtypes.add(menuItem.getDreamMenuItem().getFilter(filter));
+                else allSubtypes.add(menuItem.dreamMenuItem().getFilter(filter));
             }
         }
         // Add the skip option
@@ -60,10 +60,10 @@ public class Menu {
         for(MenuItem menuItem: menu){
 
             // If the items feature's don't match the users dream item, then continue
-            if(!menuItem.getDreamMenuItem().matches(dreamMenuItem)) continue;
+            if(!menuItem.dreamMenuItem().matches(dreamMenuItem)) continue;
 
             // If the price of the item is not within the user defined range, then continue
-            if(menuItem.getPrice()<dreamMenuItem.getMinPrice()|| menuItem.getPrice()>dreamMenuItem.getMaxPrice()) continue;
+            if(menuItem.price()<dreamMenuItem.getMinPrice()|| menuItem.price()>dreamMenuItem.getMaxPrice()) continue;
 
             // Add all items that match the users criteria
             matching.add(menuItem);

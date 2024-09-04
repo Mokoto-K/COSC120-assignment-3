@@ -15,45 +15,47 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.util.*;
+import java.util.List;
 
 public class UserInput {
 
-    private Menu menu;
+    // Menu item to get a hold of the database items
+    private final Menu menu;
 
-    private String bun;
-    private Set<Object> sauce;
-    private Dressing dressing;
-    private Set<Object> leafy;
-    private String cucumber;
-    private String pickles;
-    private String tomato;
-    private Meat meat;
-    private boolean cheese;
-    private float minPrice = 0;
-    private float maxPrice = 80;
+    // All variables for each item in the database
+    private static String bun;
+    private static Set<Object> sauce;
+    private static Dressing dressing;
+    private static Set<Object> leafy;
+    private static String cucumber;
+    private static String pickles;
+    private static String tomato;
+    private static Meat meat;
+    private static boolean cheese;
+    private static float minPrice = 0;
+    private static float maxPrice = 0;
 
-//    private
-    private JTextField name;
-    private JTextField email;
-    private JTextField phoneNumber;
-    private JTextArea message;
+    // All fields for customer information input
+    private static JTextField name;
+    private static JTextField email;
+    private static JTextField phoneNumber;
+    private static JTextArea customMessage;
 
-
-    private JLabel bunOrSauceLabel;
-    private JComboBox<Object> bunOrDressingCombo;
-    private JComboBox<Meat> meatCombo;
-    private final DefaultListModel<Object> sauceOrGreensModel = new DefaultListModel<>();
-    private JList<Object> sauceOrGreensList;
-    private JPanel aCuccumberRadio;
-    private ButtonGroup cucumberButtonGroup;
-    private ButtonGroup pickleButtonGroup;
-    private ButtonGroup tomatoButtonGroup;
-    private JCheckBox cheeseCheck;
+    // Initialise all main JComponent objects that are used throughout the class
+    private static JLabel bunOrDressingLabel;
+    private static JComboBox<Object> bunOrDressingCombo;
+    private static JComboBox<Meat> meatCombo;
+    private final static DefaultListModel<Object> sauceOrGreensModel = new DefaultListModel<>();
+    private static JList<Object> sauceOrGreensList;
+    private static JPanel cucumberRadio;
+    private static ButtonGroup cucumberButtonGroup;
+    private static ButtonGroup pickleButtonGroup;
+    private static ButtonGroup tomatoButtonGroup;
+    private static JCheckBox cheeseCheck;
     private final JLabel feedbackMin = new JLabel(" "); //set to blank to start with
     private final JLabel feedbackMax = new JLabel(" ");
-//    private JTextField minPrice;
-//    private JTextField maxPrice;
 
+    // A variable to keep track of the selected type of meal, burger, salad
     private Type selectedOption;
 
     /**
@@ -75,7 +77,6 @@ public class UserInput {
         JPanel filterOption = new JPanel();
 
         // Set all the parameters for the main panel
-        // TODO - set layout
         filterOption.setLayout(new BoxLayout(filterOption,BoxLayout.Y_AXIS));
 
         // add all other panels to the main panel
@@ -101,140 +102,206 @@ public class UserInput {
         // initialize the panel
         JPanel meal = new JPanel();
 
+        // Set the selected type to neither
         selectedOption = Type.SELECT;
-        sauceOrGreensModel.addElement("Select an Item");
 
         // Set all the parameters for the panel
         meal.setLayout(new BoxLayout(meal,BoxLayout.Y_AXIS));
-        meal.setBorder(BorderFactory.createTitledBorder("Would you like a boigur or swalid?"));
-
+        meal.setBorder(BorderFactory.createTitledBorder("Please choose between a burger or a salad?"));
 
         // Create a combobox and populate it with all options from the type enum
         JComboBox<Type> typesOfMeals = new JComboBox<>(Type.values());
         typesOfMeals.setSelectedItem(Type.SELECT);
         typesOfMeals.setPreferredSize(new Dimension(300, 30));
-        // add listener
+
+        // Add action listener to listen for user select of type of meal
         ActionListener listener = e -> {
+//            System.out.println(selectedOption);
             bunOrDressingCombo.setEnabled(!(typesOfMeals.getSelectedItem() == Type.SELECT));
             sauceOrGreensList.setEnabled(!(typesOfMeals.getSelectedItem() == Type.SELECT));
+
+            // Call the burger Or salad method sending the users choice to initialize the rest of the selection option
             burgerOrSalad((Type) Objects.requireNonNull(typesOfMeals.getSelectedItem()));
-
-
         };
 
+        // Add the listener to the combo box
         typesOfMeals.addActionListener(listener);
-        // Set all parameters for the combobox
 
+        // Create a panel to hold the combo box
         JPanel typePane = new JPanel();
         typePane.setPreferredSize(new Dimension(300, 50));
 
+        // Add the combo box to the panel
         typePane.add(typesOfMeals);
 
-        // Add the combo box to the main panel
+        // Add the combo box panel to the main panel
         meal.add(Box.createRigidArea(new Dimension(0,20)));
         meal.add(typePane);
         meal.add(Box.createRigidArea(new Dimension(0,20)));
 
-
         return meal;
     }
 
+    /**
+     * Method for returning a panel that contains either the bun options or the dressing and cucumber options
+     * depending on what meal the user has chosen, also deals with returning the chosen options for comparison
+     * @return - A panel containing the dressing/bun and cucumber options
+     */
     public JPanel bunOrDressingPanel() {
 
-        JPanel comboAndListPane = new JPanel();
-        comboAndListPane.setPreferredSize(new Dimension(300, 200));
+        // Create the main panel to hold all the components
+        JPanel mainPanel = new JPanel();
 
+        // Set it's preferred size
+        mainPanel.setPreferredSize(new Dimension(300, 200));
+
+        // Create a panel to hold the
         JPanel comboPane = new JPanel();
 
-        JLabel bunOrDressingLabel = new JLabel(" ");
+        // Create an information label to let the customer know what they are selecting
+        bunOrDressingLabel = new JLabel(" ");
+//        bunOrDressingLabel.setAlignmentX(0);
+
+        // Create a combo box to hold all the buns and dressings depending on the customers choice of type of meal
         bunOrDressingCombo = new JComboBox<>();
         bunOrDressingCombo.setPreferredSize(new Dimension(300, 30));
+
+        // Add the default item and set it to be disables
         bunOrDressingCombo.addItem("Select Item");
         bunOrDressingCombo.setEnabled(false);
 
 
         // Add an item listener to help pass which option was selected for sauce or dressing
         bunOrDressingCombo.addItemListener(e -> {
+
+            // If something was selected, check what it was
             if (e.getStateChange() == ItemEvent.SELECTED) {
+//                System.out.println(bun);
+                // If it was a burger, set all the defaults to burger related options
                 if (selectedOption == Type.BURGER) {
+
+                    // Controls the customers input to be sent to the MenuSearcher class
                     bun = (String) bunOrDressingCombo.getSelectedItem();
                     assert bun != null;
                     if (bun.equals("I don't mind")) {
                         bun = "NA";
                     }
-
                 }
-                else {
+                // If it was a salad, send all salad information to the MenuSearcher class
+                else if (selectedOption == Type.SALAD){
+
+
                     if (bunOrDressingCombo.getSelectedItem().toString().equals("I don't mind...")) {
                         dressing = Dressing.NA;
+
+                    } else {
+                        // Parsing the values from the dressings enum
+                        dressing = Dressing.valueOf(bunOrDressingCombo.getSelectedItem().toString().toUpperCase().replace(" ", "_"));
                     }
-                    dressing = Dressing.valueOf(bunOrDressingCombo.getSelectedItem().toString().toUpperCase().replace(" ", "_"));
+
                 }
             }
         });
 
-        aCuccumberRadio = new JPanel();
-        aCuccumberRadio.setVisible(false);
+        // Create a panel for the cucumber option
+        cucumberRadio = new JPanel();
 
+        // Set it to invisible
+        cucumberRadio.setVisible(false);
+
+        // Create a button group to hold the cucumber options
         cucumberButtonGroup = new ButtonGroup();
         JLabel cucumberLabel = new JLabel("Cucumber?");
+
+        // Create the radio buttons with all the options we want to give the customer
         JRadioButton yes = new JRadioButton("Yes");
         JRadioButton no = new JRadioButton("No");
         JRadioButton neither = new JRadioButton("I don't mind");
+
+        // Add the options to the radiobutton group
         cucumberButtonGroup.add(yes);
         cucumberButtonGroup.add(no);
         cucumberButtonGroup.add(neither);
+        // Set the default selection
         cucumberButtonGroup.setSelected(neither.getModel(), true);
 
+        // Set the output of the action commands
         yes.setActionCommand("yes");
         no.setActionCommand("no");
         neither.setActionCommand("I don't mind");
 
+        // Handles passing the users selection to the MenuSearcher class
         cucumber = cucumberButtonGroup.getSelection().getActionCommand();
         ActionListener listener = e -> {
             cucumber = cucumberButtonGroup.getSelection().getActionCommand();
         };
+
+        // Add the listener to the radio buttons
         yes.addActionListener(listener);
         no.addActionListener(listener);
         neither.addActionListener(listener);
 
-        aCuccumberRadio.add(cucumberLabel);
-        aCuccumberRadio.add(yes);
-        aCuccumberRadio.add(no);
-        aCuccumberRadio.add(neither);
+        // Add the radio buttons to the radio panel
+        cucumberRadio.add(cucumberLabel);
+        cucumberRadio.add(yes);
+        cucumberRadio.add(no);
+        cucumberRadio.add(neither);
 
+        // Set the layout and add all panels and components to the comboPane
         comboPane.setLayout(new BoxLayout(comboPane, BoxLayout.Y_AXIS));
         comboPane.add(Box.createRigidArea(new Dimension(0,50)));
         comboPane.add(bunOrDressingLabel);
+        comboPane.add(Box.createRigidArea(new Dimension(0,10)));
         comboPane.add(bunOrDressingCombo);
         comboPane.add(Box.createRigidArea(new Dimension(0,20)));
-        comboPane.add(aCuccumberRadio);
+        comboPane.add(cucumberRadio);
 
-        comboAndListPane.add(Box.createRigidArea(new Dimension(0,20)));
-        comboAndListPane.add(comboPane);
-        comboAndListPane.add(Box.createRigidArea(new Dimension(0,20)));
+        // Finally add the combo pane to the main panel to be returned
+        mainPanel.add(Box.createRigidArea(new Dimension(0,20)));
+        mainPanel.add(comboPane);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,20)));
 
-        return comboAndListPane;
+        return mainPanel;
     }
 
+    /**
+     * Method for creating a Panel containing a list area and assigning its contents to the MenuSearcher
+     * class for comparison. The list will change content depending on the users choice of selected meal
+     * @return - A Panel containing a List area
+     */
     public JPanel sauceOrGreensPanel() {
 
-        JPanel comboAndListPane = new JPanel();
+        // Create the main panel
+        JPanel mainPanel = new JPanel();
 
+        // Create the panel to hold the List area
         JPanel listPane = new JPanel();
-//        listPane.setPreferredSize(new Dimension(300, 200));
 
+        // Create the label for the list
         JLabel sauceOrGreensLabel = new JLabel(" ");
+
+        // Remove any items in the list area and add a default item to view in the JListArea
+        sauceOrGreensModel.removeAllElements();
+        sauceOrGreensModel.addElement("Select an Item");
+
+        // Initialize the JList with the predefined default list model
         sauceOrGreensList = new JList<>(sauceOrGreensModel);
 
+        // Create a scroll pane passing it the list and setting its basic settings
         JScrollPane scrollPane = new JScrollPane(sauceOrGreensList);
         scrollPane.setPreferredSize(new Dimension(300, 100));
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+        // Allow multiple selections
         sauceOrGreensList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        // Set it as disabled by default, will only be enabled if the customer selections a meal option
         sauceOrGreensList.setEnabled(false);
 
+        // Create a listener to focus on the selections in the list, if the burger type was selected by the user
+        // set the sauce variable to a set of selected items, otherwise set it to the same for leafy greens
         ListSelectionListener listener = e -> {
+            // TODO - Might have to specifically address the select case, instead of burger or else
             if (selectedOption == Type.BURGER) {
                 sauce = new HashSet<>(sauceOrGreensList.getSelectedValuesList());
             }
@@ -243,16 +310,19 @@ public class UserInput {
             }
         };
 
+        // Add the listener to the list
         sauceOrGreensList.addListSelectionListener(listener);
 
+        // Add the Components to the list panel
         listPane.add(sauceOrGreensLabel);
         listPane.add(scrollPane);
 
-        comboAndListPane.add(Box.createRigidArea(new Dimension(0,20)));
-        comboAndListPane.add(listPane);
-        comboAndListPane.add(Box.createRigidArea(new Dimension(0,20)));
+        // Add the list panel to the main panel as well as some padding
+        mainPanel.add(Box.createRigidArea(new Dimension(0,20)));
+        mainPanel.add(listPane);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,20)));
 
-        return comboAndListPane;
+        return mainPanel;
     }
 
     /**
@@ -364,14 +434,23 @@ public class UserInput {
         return mainPanel;
     }
 
+    /**
+     * Method for creating a J combo Box full of the values from the Meat enum
+     * @return JCombo box  comprised of Meat enum options
+     */
     public JPanel meatPanel() {
+        // Create the main panel
         JPanel mainPanel = new JPanel();
 
+        // Initialize the combo box to hold all the Meat enum values
         meatCombo = new JComboBox<>(Meat.values());
+
+        // Set the size and default option
         meatCombo.setPreferredSize(new Dimension(300, 40));
         meatCombo.setSelectedItem(Meat.BEEF);
         meat = (Meat) meatCombo.getSelectedItem();
 
+        // Add an listener to listen for the users selection
         meatCombo.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 meat = (Meat) meatCombo.getSelectedItem();
@@ -379,6 +458,7 @@ public class UserInput {
             }
         });
 
+        // Add the combo box
         mainPanel.add(meatCombo);
 
         return mainPanel;
@@ -411,54 +491,67 @@ public class UserInput {
         return mainPanel;
     }
 
-    // This was adapted from lecture 10 SearchView.java
+    /**
+     * Adapted from lecture 10 SearchView.java - getUserInputAgeRange lines - 290 - 363
+     * Method that returns a panel of the users price input range. It uses a document listener to
+     * inform the user if their input is correct and prompts them with how to fix it .
+     * @return - A Panel containing all price related components.
+     */
     public JPanel pricePanel(){
-        //labels for the text boxes
-        JLabel minLabel = new JLabel("Min. age");
-        JLabel maxLabel = new JLabel("Max. age");
-        //create text boxes...
+        // Create the labels for the min and max price fields
+        JLabel minLabel = new JLabel("Min. Price");
+        JLabel maxLabel = new JLabel("Max. Price");
+
+        // Create the Text fields to hold the max and min prices
         JTextField min = new JTextField(4);
         JTextField max = new JTextField(4);
-        //set default values for the age range text boxes (editable)
+
+        // Initialize the min and max fields
         min.setText(String.valueOf(minPrice));
         max.setText(String.valueOf(maxPrice));
 
-        //this is how you change the font and size of text
+        // Controls the font and style of the feedback message
         feedbackMin.setFont(new Font("", Font. ITALIC, 12));
         feedbackMin.setForeground(Color.RED);
         feedbackMax.setFont(new Font("", Font. ITALIC, 12));
         feedbackMax.setForeground(Color.RED);
 
-        //EDIT 15: let’s add a document listener to the min and max age text fields.
-        //You will see that the insertUpdate, removeUpdate and changedUpdate method declarations will
-        //be automatically added. You must implement these (or leave them blank).
-        //We’ll implement the first two, so that whenever the user enters or removes text from the fields,
-        //we check whether the contents are valid.
+        // Create a document listener for the min price, this will monitor the text field input for the min price
+        // and update the feedback label with instructions for the user.
         min.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                //if the check min method returns false, request user addresses invalid input
+                // If the check max method returns false, request user addresses the invalid input
                 if(!checkMin(min)) min.requestFocus();
-                checkMax(max); //after min has been updated, check max is still valid
+
+                // Check the max after the min has been updated
+                checkMax(max);
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
-                //removing and inserting should be subjected to the same checks
+                // removing and inserting should be subjected to the same checks
                 if(!checkMin(min))min.requestFocus();
+                // Check the max after the min has been updated
                 checkMax(max);
             }
             @Override
             public void changedUpdate(DocumentEvent e) {} //NA
         });
+
+        // Create a document listener for the max price, this will monitor the text field input for the max price
+        // and update the feedback label with instructions for the user.
         max.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
+                // If the check max method returns false, request user addresses the invalid input
                 if(!checkMax(max)) max.requestFocusInWindow();
+                // Check the min after the max has been updated
                 checkMin(min);
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
                 if(!checkMax(max))max.requestFocusInWindow();
+                // Check the min after the max has been updated
                 checkMin(min);
             }
             @Override
@@ -466,41 +559,45 @@ public class UserInput {
             }
         });
 
-        //add the text fields and labels to a panel
-        JPanel ageRangePanel = new JPanel(); //flowlayout by default
-        ageRangePanel.add(minLabel);
-        ageRangePanel.add(min);
-        ageRangePanel.add(maxLabel);
-        ageRangePanel.add(max);
+        // Create a panel to hold all the price related J components
+        JPanel priceRangePanel = new JPanel();
+        priceRangePanel.add(minLabel);
+        priceRangePanel.add(min);
+        priceRangePanel.add(maxLabel);
+        priceRangePanel.add(max);
 
-        JPanel finalPanel = new JPanel();
-        finalPanel.setBorder(BorderFactory.createTitledBorder("Enter desired age range"));
-        finalPanel.setPreferredSize(new Dimension(300, 100));
-//        finalPanel.setLayout(new BoxLayout(finalPanel,BoxLayout.Y_AXIS)); //stack elements vertically
-//        finalPanel.setAlignmentX(0);
-        finalPanel.add(ageRangePanel);
+        // Create the main panel to hold all components
+        JPanel mainPanel = new JPanel();
+
+        // Set the panels default settings and add the price panel and feedback labels
+        mainPanel.setBorder(BorderFactory.createTitledBorder("Enter desired Price range"));
+        mainPanel.setPreferredSize(new Dimension(300, 100));
+        mainPanel.add(priceRangePanel);
         feedbackMin.setAlignmentX(0);
         feedbackMax.setAlignmentX(0);
-        finalPanel.add(feedbackMin); //feedback below age entry text boxes
-        finalPanel.add(feedbackMax);
+        mainPanel.add(feedbackMin);
+        mainPanel.add(feedbackMax);
 
-        return finalPanel;
+        return mainPanel;
     }
 
-    //EDIT 16: to minimize code repetition, let’s outsource the task of validating the user entry to these two methods.
-    //They will return true if input is valid, and false if it isn’t. If input is not valid, we will request that
-    //the user changes their input.
     /**
-     * validates user input for min age
-     * @param minEntry the JTextField used to enter min age
-     * @return true if valid age, false if invalid
+     * Adapted from lecture 10 SearchView.java, checkMin lines 372 - 391: Besides change ints to floats, Only variables
+     * and comments were changed
+
+     * Validates user input for the min price range
+     * @param minEntry the JTextField used to enter the minimum price
+     * @return true if valid price, false if invalid
      */
     private boolean checkMin(JTextField minEntry){
+        // Initialise the feedback string to an empty string
         feedbackMin.setText("");
+
+        // Try to parse the users input and set the feedback text field to help them make a better input choice
         try{
-            int tempMin = Integer.parseInt(minEntry.getText());
+            float tempMin = Float.parseFloat(minEntry.getText());
             if(tempMin < -1 || tempMin>maxPrice) {
-                feedbackMin.setText("Min age must be >= "+ -1 +" and <= "+maxPrice+". Defaulting to "+minPrice+" - "+maxPrice+".");
+                feedbackMin.setText("Min price must be >= "+ -1 +" and <= "+maxPrice+". Defaulting to "+minPrice+" - "+maxPrice+".");
                 minEntry.selectAll();
                 return false;
             }else {
@@ -508,24 +605,31 @@ public class UserInput {
                 feedbackMin.setText("");
                 return true;
             }
+            // If they don't enter a number, let them know the price will default
         }catch (NumberFormatException n){
-            feedbackMin.setText("Please enter a valid number for min age. Defaulting to "+minPrice+" - "+maxPrice+".");
+            feedbackMin.setText("Please enter a valid number for min price. Defaulting to "+minPrice+" - "+maxPrice+".");
             minEntry.selectAll();
             return false;
         }
     }
 
     /**
-     * validates user input for max age
-     * @param maxEntry the JTextField used to enter max age
-     * @return true if valid age, false if invalid
+     * Adapted from lecture 10 SearchView.java  checkMin lines 392 - 415: Besides change ints to floats, Only variables
+     * and comments were changed
+
+     * validates user input for the max price range
+     * @param maxEntry the JTextField used to enter the maximum price
+     * @return true if valid price, false if invalid
      */
     private boolean checkMax(JTextField maxEntry){
+        // Initialise the feedback string to an empty string
         feedbackMax.setText("");
+
+        // Try to parse the users input and set the feedback text field to help them make a better input choice
         try{
-            int tempMax = Integer.parseInt(maxEntry.getText());
+            float tempMax = Float.parseFloat(maxEntry.getText());
             if(tempMax < minPrice) {
-                feedbackMax.setText("Max age must be >= min age. Defaulting to "+minPrice+" - "+maxPrice+".");
+                feedbackMax.setText("Max price must be >= min price. Defaulting to "+minPrice+" - "+maxPrice+".");
                 maxEntry.selectAll();
                 return false;
             }else {
@@ -533,115 +637,166 @@ public class UserInput {
                 feedbackMax.setText("");
                 return true;
             }
+            // If they don't enter a number, let them know the price will default
         }catch (NumberFormatException n){
-            feedbackMax.setText("Please enter a valid number for max age. Defaulting to "+minPrice+" - "+maxPrice+".");
+            feedbackMax.setText("Please enter a valid number for max price. Defaulting to "+minPrice+" - "+maxPrice+".");
             maxEntry.selectAll();
             return false;
         }
     }
 
-    // Adapted for FindAPet.java Tutorial 10
-    public JPanel contactForm(){
-        //create labels and text fields for users to enter contact info and message
+    /**
+     * Adapted form FindAPet.java Tutorial 10 - Very few changes made besides variable names and comments
+     * Method for creating the order form for the 3rd view of the program
+     * @return userInputPanel - A panel containing all the user input fields for the customer to enter their
+     * information into.
+     */
+    public JPanel orderForm(){
+        // Create the labels and text fields for the order form, i.e Name, number, customer order
         JLabel enterName = new JLabel("Full name");
         name = new JTextField(12);
         name.setPreferredSize(new Dimension(100, 40));
-        JLabel enterEmail = new JLabel("Email address");
-        email = new JTextField(12);
-        email.setPreferredSize(new Dimension(100, 40));
         JLabel enterPhoneNumber = new JLabel("Phone number");
         phoneNumber = new JTextField(12);
         phoneNumber.setPreferredSize(new Dimension(100, 40));
-        JLabel enterMessage = new JLabel("Type your query below");
-        message = new JTextArea(6,12);
-        //add input validation for above fields
+        JLabel enterMessage = new JLabel("Any additional information?");
+        customMessage = new JTextArea(6,12);
 
-        JScrollPane jScrollPane = new JScrollPane(message);
-//        jScrollPane.getViewport().setPreferredSize(new Dimension(250,100));
+        // ScrollPane to hold the custom message for the order
+        JScrollPane jScrollPane = new JScrollPane(customMessage);
 
-        //create a new panel, add padding and user entry boxes/messages to the panel
+        // Create a panel to hold all the JComponents
         JPanel userInputPanel = new JPanel();
-//        userInputPanel.setPreferredSize(new Dimension(400, 400));
+
+        // Set all parameters of the panel
         userInputPanel.setLayout(new BoxLayout(userInputPanel,BoxLayout.Y_AXIS));
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
         userInputPanel.setAlignmentX(0);
+
+        // Align and add the name components
         enterName.setAlignmentX(0);
         name.setAlignmentX(0);
         userInputPanel.add(enterName);
         userInputPanel.add(name);
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
-        enterEmail.setAlignmentX(0);
-        email.setAlignmentX(0);
-        userInputPanel.add(enterEmail);
-        userInputPanel.add(email);
-        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
+
+        // Align and add the Phone number components
         enterPhoneNumber.setAlignmentX(0);
         phoneNumber.setAlignmentX(0);
         userInputPanel.add(enterPhoneNumber);
         userInputPanel.add(phoneNumber);
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
+
+        // Align and add the CustomMessage components
         enterMessage.setAlignmentX(0);
-        message.setAlignmentX(0);
+        customMessage.setAlignmentX(0);
         userInputPanel.add(enterMessage);
         jScrollPane.setAlignmentX(0);
         userInputPanel.add(jScrollPane);
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
-        //return the panel to the calling method - could be either the send-message or adoption-request
+
         return userInputPanel;
     }
 
+    /**
+     * Method that sets which ingredients are available to choose from relating to menu specific items. Sets a combo
+     * box and a list area with a user type selections options, it also takes care of resetting and switch the values
+     * if the user changes which meal they want to order.
+     * @param typeOfFood - Enum value of the users selection
+     */
     public void burgerOrSalad(Type typeOfFood) {
 
+        // If the user selects Burger for their meal
         if (typeOfFood.equals(Type.BURGER)){
+
+            // Set the selection Type to burger
             selectedOption = Type.BURGER;
+
+            // Set the bun and dressing label to the bun option
+            bunOrDressingLabel.setText("Type of Bun");
+
+            // Delete all items in the combo box related to the bun's and dressing's
             bunOrDressingCombo.removeAllItems();
-//            bunOrDressingCombo = new JComboBox<>();
-            for (Object s : menu.getAllIngredientTypes(Filter.BUN)) {
-                bunOrDressingCombo.addItem(s.toString());
+
+            // For every bun in the database
+            for (Object bun : menu.getAllIngredientTypes(Filter.BUN)) {
+                // Add the bun to the combo box
+                bunOrDressingCombo.addItem(bun.toString());
             }
+            // Select the default item in the combo box to the first item
             bunOrDressingCombo.setSelectedItem(bunOrDressingCombo.getItemAt(0));
 
+            // Delete all the elements in the sauceOrGreensModel (this will be a list of either sauce of leafy greens)
             sauceOrGreensModel.removeAllElements();
+
+            // For every sauce in the Sauce enum
             for (Sauce s : Sauce.values()) {
+                // Add each sauce to the List model
                 sauceOrGreensModel.addElement(s);
             }
 
-            aCuccumberRadio.setVisible(false);
+            // Set the cucumber radio button to invisible
+            cucumberRadio.setVisible(false);
 
         }
+        // If the user selects salad
         else if (typeOfFood.equals(Type.SALAD)) {
+
+            // Set the type selection to Salad
             selectedOption = Type.SALAD;
+
+            // Set the bun and dressing label to the salad option
+            bunOrDressingLabel.setText("Type of Dressing");
+
+            // Delete all items in the combo box related to the bun's and dressing's
             bunOrDressingCombo.removeAllItems();
-            for (Object s : menu.getAllIngredientTypes(Filter.DRESSING)) {
-                bunOrDressingCombo.addItem(s.toString());
+
+
+            // For every Dressing in the Dressing Enum
+            for (Object dressing : Dressing.values()) {
+                // Add the dressing to the combo Box
+                bunOrDressingCombo.addItem(dressing.toString());
             }
 
-//            bunOrDressingCombo = new JComboBox<>(Dressing.values());
-            bunOrDressingCombo.setSelectedItem(Dressing.NA);
+            // Select the default item in the combo box to the first item
+            bunOrDressingCombo.setSelectedItem(bunOrDressingCombo.getItemAt(0));
 
+            // Set the default value in the combo box
+//            bunOrDressingCombo.setSelectedItem(Dressing.NA);
+
+            // Delete all the elements in the sauceOrGreensModel (this will be a list of either sauce of leafy greens)
             sauceOrGreensModel.removeAllElements();
-            for (Object s : menu.getAllIngredientTypes(Filter.LEAFY_GREENS)) {
-                sauceOrGreensModel.addElement(s.toString());
+
+            // For every leaf in the database
+            for (Object leaf : menu.getAllIngredientTypes(Filter.LEAFY_GREENS)) {
+                // Add the leaf to the model list
+                sauceOrGreensModel.addElement(leaf.toString());
             }
 
-            aCuccumberRadio.setVisible(true);
+            // Set the cucumber radio to visible
+            cucumberRadio.setVisible(true);
         }
+        // If neither salad nor burger is selected
         else {
+
+            // Set the type selection to Salad
+            selectedOption = Type.SELECT;
+
+            // Reset the bun and dressing label to empty
+            bunOrDressingLabel.setText("");
+
+            // Remove all options from the combo box and add the default option
             bunOrDressingCombo.removeAllItems();
             bunOrDressingCombo.addItem("Select an Item");
+
+            // Delete all options from the List area and add the default option
             sauceOrGreensModel.removeAllElements();
             sauceOrGreensModel.addElement("Select an Item");
-            aCuccumberRadio.setVisible(false);
+
+            // Set the cucumber radio to invisible
+            cucumberRadio.setVisible(false);
         }
     }
-
-
-
-
-
-
-
-
 
     // Getters
 
@@ -742,14 +897,6 @@ public class UserInput {
     }
 
     /**
-     * Gets the bun selected
-     * @return The selected Bun
-     */
-    public String getEmail() {
-        return email.getText();
-    }
-
-    /**
      * Gets the user phone number
      * @return The users phone number
      */
@@ -762,7 +909,7 @@ public class UserInput {
      * @return The message
      */
     public String getMessage() {
-        return message.getText();
+        return customMessage.getText();
     }
 
     /**

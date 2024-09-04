@@ -14,6 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+// TODO - Fix letters in price boxes still searches
+// TODO - Add modular Feedback for name an phonenumber input
+// TODO - Add validchecks for name and phone number
 
 public class MenuSearcher {
 
@@ -285,38 +288,62 @@ public class MenuSearcher {
             String bun = userInput.getBun();
             if (!bun.equals("NA")) filtersMap.put(Filter.BUN, bun);
 
-            // If the user selects at least one sauce option, add it to the map
+            // If the user selects at least one sauce option, that isn't "Any will do" add it to the set
             Set<Object> sauces = userInput.getSauce();
-            if (!(sauces == null)) filtersMap.put(Filter.SAUCE_S, sauces);
+            if (!(sauces.isEmpty())) {
+//                System.out.println(sauces);
+                if (!sauces.contains(Sauce.NA)) {
+                    filtersMap.put(Filter.SAUCE_S, sauces);
+                }
+            }
 
         }
         else {
             // Add dressing, cucumber and leafy greens if the user has chosen salad
             Dressing dressing = userInput.getDressing();
-            filtersMap.put(Filter.DRESSING, dressing);
+            if (!(dressing == Dressing.NA)) filtersMap.put(Filter.DRESSING, dressing);
 
             String cucumber = userInput.getCucumber();
-            if (!cucumber.equals("I don't mind")) filtersMap.put(Filter.CUCUMBER, cucumber);
+            if (!cucumber.equals("I don't mind")) {
+                if (cucumber.equals("yes")) filtersMap.put(Filter.CUCUMBER, true);
+                else filtersMap.put(Filter.CUCUMBER, false);
+            }
 
             Set<Object> leafy = userInput.getLeafy();
-            if (!(leafy == null)) filtersMap.put(Filter.LEAFY_GREENS, leafy);
+            if (!(leafy.isEmpty())) {
+                if (!leafy.contains("I don't mind")) {
+                    filtersMap.put(Filter.LEAFY_GREENS, leafy);
+                }
+            }
 
         }
 
         // Add the pickles and the tomato id the user has chosen values for each
         String pickles = userInput.getPickles();
-        if (!pickles.equals("I don't mind")) filtersMap.put(Filter.PICKLES, pickles);
+        if (!pickles.equals("I don't mind")) {
+            if (pickles.equals("yes")) filtersMap.put(Filter.PICKLES, true);
+            else filtersMap.put(Filter.PICKLES, false);
+        }
 
         String tomato = userInput.getTomato();
-        if (!tomato.equals("I don't mind")) filtersMap.put(Filter.TOMATO, tomato);
+        if (!tomato.equals("I don't mind")) {
+            if (tomato.equals("yes")) filtersMap.put(Filter.TOMATO, true);
+            else filtersMap.put(Filter.TOMATO, false);
+        }
 
         // Add meat if the user has selected an option
         Meat meat = userInput.getMeat();
         if (!(meat == Meat.NA)) filtersMap.put(Filter.MEAT, meat);
 
+        // Get Da cheese
+        filtersMap.put(Filter.CHEESE, userInput.getCheese());
+
+
         // The min and max price range the customer is looking for
         float minimumPrice = userInput.getMinPrice();
         float maximumPrice = userInput.getMaxPrice();
+
+
 
         // Create a DreamMeniItem passing in the map and the customers price range values
         DreamMenuItem dreamMenuItem = new DreamMenuItem(filtersMap, minimumPrice, maximumPrice);
@@ -411,8 +438,8 @@ public class MenuSearcher {
             JTextArea mealDescription = new JTextArea();
 
             // Depending on the type of meal a customer selected, get the information of the items only for that meal type
-            if (type.equals(Type.BURGER)) mealDescription = new JTextArea(potentialMatches.get(i).getMenuItemInformation());
-            if (type.equals(Type.SALAD)) mealDescription = new JTextArea(potentialMatches.get(i).getMenuItemInformation());
+            if (type.equals(Type.BURGER)) mealDescription = new JTextArea(potentialMatches.get(i).toString());
+            if (type.equals(Type.SALAD)) mealDescription = new JTextArea(potentialMatches.get(i).toString());
 
             // Stop the text field from being editable
             mealDescription.setEditable(false);
@@ -428,7 +455,7 @@ public class MenuSearcher {
             mainPanel.add(Box.createRigidArea(new Dimension(0,10)));
 
             // Add the item to the String array of options to choose from for the combo Box
-            menuOptions[i] = potentialMatches.get(i).getMenuItemName();
+            menuOptions[i] = potentialMatches.get(i).menuItemName();
         }
         // Create the Combo box passing it in the list of menu items
         matchingMealsCombo = new JComboBox<>(menuOptions);
@@ -514,7 +541,7 @@ public class MenuSearcher {
         // Iterate through the menu database
         for (MenuItem meal : potentialMatches) {
             // If the selectedItem from the combo box matches an item in the database, then return its information
-            if (selectedItem.equals(meal.getMenuItemName())) {
+            if (selectedItem.equals(meal.menuItemName())) {
                 // Call the placeOrder method passing in the meal returned from the database.
                 placeOrder(meal);
             }
@@ -532,7 +559,7 @@ public class MenuSearcher {
      */
     public static void placeOrder(MenuItem chosenMeal){
         // Title for the top of the window including the name of the meal and instructions for the customer
-        JLabel paneTitle = new JLabel("To place an order for a "+chosenMeal.getMenuItemName()+" Please enter your details below  ");
+        JLabel paneTitle = new JLabel("To place an order for a "+chosenMeal.menuItemName()+" Please enter your details below  ");
 
         // Create a ScrollPane and populate it with the details of the users choice of meal
         JScrollPane jScrollPane = new JScrollPane(describeIndividualPet(chosenMeal));
@@ -542,7 +569,7 @@ public class MenuSearcher {
 
         // Create a Panel to hold the panel that has the title, the image and the item description
         JPanel controlPane = new JPanel();
-        controlPane.setPreferredSize(new Dimension(500, 500));
+        controlPane.setPreferredSize(new Dimension(500, 600));
         controlPane.setLayout(new BorderLayout());
 
         // Create a panel to hold the title, image and item description
@@ -551,7 +578,7 @@ public class MenuSearcher {
 
         // Create an ImageIcon of the chosen meal by looking up it's ID number and searching for the corresponding image
         // in the image file
-        ImageIcon picOfFood = new ImageIcon(new ImageIcon("./images/"+ chosenMeal.getMenuItemIdentifier() +".png")
+        ImageIcon picOfFood = new ImageIcon(new ImageIcon("./images/"+ chosenMeal.menuItemIdentifier() +".png")
                 .getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
 
         // Create a label passing in the imageicon
@@ -568,7 +595,7 @@ public class MenuSearcher {
         controlPane.add(itemDescriptionPanel);
 
         // Create a Panel and pass it the return value from the contactForm method
-        JPanel userInputPanel = userInput.contactForm();
+        JPanel userInputPanel = userInput.orderForm();
 
         // Create a button for the customer to click on to submit their information
         JButton submit = new JButton("Submit");
@@ -577,7 +604,7 @@ public class MenuSearcher {
         ActionListener actionListener = e -> {
 
             String lineToWrite = "Order Details: \n" + "\tName: " + userInput.getName() + " (" + userInput.getPhoneNumber()
-                    + ")\n\t" + "\tItem: " + chosenMeal.getMenuItemName() + "(" + chosenMeal.getMenuItemIdentifier() + ")" +
+                    + ")\n\t" + "\tItem: " + chosenMeal.menuItemName() + "(" + chosenMeal.menuItemIdentifier() + ")" +
                     "\n\nCustomisation: " + userInput.getMessage();
             createCustomerOrderFile(lineToWrite);
         };
@@ -629,7 +656,7 @@ public class MenuSearcher {
      */
     public static JTextArea describeIndividualPet(MenuItem menuItem){
         // Create a Textarea filled in with the details of the item the customer has ordered
-        JTextArea itemDescription = new JTextArea(menuItem.getMenuItemInformation());
+        JTextArea itemDescription = new JTextArea(menuItem.toString());
 
         // Ensure that the text field is not editable
         itemDescription.setEditable(false);
