@@ -21,7 +21,7 @@ public record MenuItem(long menuItemIdentifier, String menuItemName, double pric
         DecimalFormat df = new DecimalFormat("0.00");
 
         // Initialize a string to hold all the items description
-        String output = "\n*******************************************";
+        String output ="";
         if(this.menuItemIdentifier()!=0) {
             output+="\n"+this.menuItemName()+" ("+this.menuItemIdentifier()+")"+ "\n"+this.description();
             output+=this.dreamMenuItem().getInfo();
