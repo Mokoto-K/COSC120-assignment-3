@@ -360,7 +360,7 @@ public class MenuSearcher {
         // If potential matches returns empty
         if(potentialMatches.isEmpty()) {
             // Inform the customer their choices led to no menu items and let them try again.
-            JOptionPane.showMessageDialog(mainFrame, "No meals for you bitch. \n", "No meals Found", JOptionPane.INFORMATION_MESSAGE, icon);
+            JOptionPane.showMessageDialog(mainFrame, "Sorry no meals match your search criteria. \n", "No meals Found", JOptionPane.INFORMATION_MESSAGE, icon);
             // Call restart default pne to reset the main window of the GUI
             restartDefaultPane();
         }
@@ -583,7 +583,6 @@ public class MenuSearcher {
         }
     }
 
-    // TODO - Check the 3rd viewing window isn't broken due to images
     /**
      * A Method that takes in the users order and builds the main window for the customer to enter their details to
      * order their meal. It creates a series of panels using the customers choice of meal to display all the information
