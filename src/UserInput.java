@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.util.*;
+import java.util.jar.JarEntry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -726,9 +727,6 @@ public class UserInput {
 
     // SOUTH PANEL CONTENT
 
-
-
-
     /**
      * Adapted from lecture 10 SearchView.java - getUserInputAgeRange lines - 290 - 363
      * Method that returns a panel of the users price input range. It uses a document listener to
@@ -749,10 +747,10 @@ public class UserInput {
         max.setText(String.valueOf(maxPrice));
 
         // Controls the font and style of the feedback message
-        feedbackMin.setFont(new Font("", Font. ITALIC, 12));
+        feedbackMin.setFont(new Font("", Font. ITALIC, 10));
         feedbackMin.setForeground(Color.RED);
         feedbackMin.setText(" ");
-        feedbackMax.setFont(new Font("", Font. ITALIC, 12));
+        feedbackMax.setFont(new Font("", Font. ITALIC, 10));
         feedbackMax.setForeground(Color.RED);
 
         // Create a document listener for the min price, this will monitor the text field input for the min price
@@ -801,6 +799,7 @@ public class UserInput {
         // Create a panel to hold all the price related J components
         JPanel pricePanel = new JPanel();
         JPanel feedBackPanel = new JPanel();
+
 
 
         pricePanel.add(minLabel);
@@ -909,19 +908,22 @@ public class UserInput {
      */
     public JPanel orderForm(){
         // Create the labels for the text fields
-        JLabel enterName = new JLabel("Full name");
-        JLabel enterPhoneNumber = new JLabel("Phone number");
+        JLabel enterName = new JLabel(" Full name");
+        enterName.setAlignmentX(0);
+        JLabel enterPhoneNumber = new JLabel(" Phone number");
+        enterPhoneNumber.setAlignmentX(0);
         JLabel enterMessage = new JLabel("Any additional information?");
+        enterMessage.setAlignmentX(0);
 
         // Create the text fields for the user information variables
-        name = new JTextField(12);
-        phoneNumber = new JTextField(12);
-        customMessage = new JTextArea(6,12);
+        name = new JTextField(22);
+        name.setAlignmentX(0);
+        phoneNumber = new JTextField(22);
+        phoneNumber.setAlignmentX(0);
+        customMessage = new JTextArea(6,16);
 
-        // Set the preferred size
-        name.setPreferredSize(new Dimension(100, 40));
-        phoneNumber.setPreferredSize(new Dimension(100, 40));
-
+        feedbackName.setAlignmentX(0);
+        feedbackNumber.setAlignmentX(0);
 
         // Create a Doc listener for the name textfield to let the customer know what they need to do to
         // enter the correct information
@@ -965,40 +967,49 @@ public class UserInput {
 
         // ScrollPane to hold the custom message for the order
         JScrollPane jScrollPane = new JScrollPane(customMessage);
+        jScrollPane.setAlignmentX(0);
+        jScrollPane.setPreferredSize(new Dimension(300, 200));
+
+        JPanel namePanel = new JPanel();
+        namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.Y_AXIS));
+        namePanel.setPreferredSize(new Dimension(300, 60));
+//        namePanel.add(Box.createRigidArea(new Dimension(10,0)));
+        namePanel.add(enterName);
+        namePanel.add(name);
+        namePanel.add(feedbackName);
+
+        JPanel numberPanel = new JPanel();
+        numberPanel.setLayout(new BoxLayout(numberPanel, BoxLayout.Y_AXIS));
+        numberPanel.setPreferredSize(new Dimension(300, 60));
+//        numberPanel.add(Box.createRigidArea(new Dimension(10,0)));
+        numberPanel.add(enterPhoneNumber);
+        numberPanel.add(phoneNumber);
+        numberPanel.add(feedbackNumber);
+
+        JPanel messagePanel = new JPanel();
+        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
+        messagePanel.setPreferredSize(new Dimension(300, 200));
+        messagePanel.add(enterMessage);
+        messagePanel.add(jScrollPane);
 
         // Create a panel to hold all the JComponents
         JPanel userInputPanel = new JPanel();
 
         // Set all parameters of the panel
         userInputPanel.setLayout(new BoxLayout(userInputPanel,BoxLayout.Y_AXIS));
-        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
         userInputPanel.setAlignmentX(0);
 
-        // Align and add the name components
-        enterName.setAlignmentX(0);
-        name.setAlignmentX(0);
-        userInputPanel.add(enterName);
-        userInputPanel.add(name);
+        userInputPanel.add(Box.createRigidArea(new Dimension(10,0)));
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
-        userInputPanel.add(feedbackName);
+        userInputPanel.add(namePanel);
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
-
-        // Align and add the Phone number components
-        enterPhoneNumber.setAlignmentX(0);
-        phoneNumber.setAlignmentX(0);
-        userInputPanel.add(enterPhoneNumber);
-        userInputPanel.add(phoneNumber);
+        userInputPanel.add(numberPanel);
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
-        userInputPanel.add(feedbackNumber);
-        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
-
-        // Align and add the CustomMessage components
-        enterMessage.setAlignmentX(0);
-        customMessage.setAlignmentX(0);
-        userInputPanel.add(enterMessage);
-        jScrollPane.setAlignmentX(0);
-        userInputPanel.add(jScrollPane);
-        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        userInputPanel.add(messagePanel);
+//        userInputPanel.add(Box.createRigidArea(new Dimension(0,20)));
+//        userInputPanel.add(jScrollPane);
+//        userInputPanel.add(Box.createRigidArea(new Dimension(10,0)));
+//        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
 
         return userInputPanel;
     }
@@ -1012,13 +1023,13 @@ public class UserInput {
         // If the name input by the user meets the correct format inform the user
         if(isValidFullName(name.getText())) {
             feedbackName.setText("Correct Input detected");
-            feedbackName.setFont(new Font("", Font. ITALIC, 12));
+            feedbackName.setFont(new Font("", Font. ITALIC, 10));
             feedbackName.setForeground(Color.BLUE);
             return false;
             // If the input is incorrect, hint them to the correct response
         }else {
-            feedbackName.setText("Please make sure to enter your Full name Starting with a Capital letter");
-            feedbackName.setFont(new Font("", Font. ITALIC, 12));
+            feedbackName.setText("Full Name starting with capitals");
+            feedbackName.setFont(new Font("", Font. ITALIC, 10));
             feedbackName.setForeground(Color.RED);
             nameField.selectAll();
             return true;
@@ -1034,13 +1045,13 @@ public class UserInput {
          // If the phone number input by the user meets the correct format inform the user
         if(isValidPhoneNumber(phoneNumber.getText())) {
             feedbackNumber.setText("Correct Input detected");
-            feedbackNumber.setFont(new Font("", Font. ITALIC, 12));
+            feedbackNumber.setFont(new Font("", Font. ITALIC, 10));
             feedbackNumber.setForeground(Color.BLUE);
             return false;
          // If the input is incorrect, hint them to the correct response
         }else {
-            feedbackNumber.setText("Please Enter a 10 digit phone number starting with 04");
-            feedbackNumber.setFont(new Font("", Font. ITALIC, 12));
+            feedbackNumber.setText("10 digit number starting with 04");
+            feedbackNumber.setFont(new Font("", Font. ITALIC, 10));
             feedbackNumber.setForeground(Color.RED);
             numberField.selectAll();
             return true;

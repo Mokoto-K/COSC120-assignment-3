@@ -47,7 +47,7 @@ public class MenuSearcher {
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mainFrame.setIconImage(icon.getImage());
         // Changing frame size for testings, it was 500, 900
-        mainFrame.setMinimumSize(new Dimension(400, 400));
+        mainFrame.setPreferredSize(new Dimension(1000, 500));
 
         // Assign the output of our main panel method to the set content pane method of the JFrame to initialise our gui
         defaultPane = mainPanel();
@@ -251,17 +251,18 @@ public class MenuSearcher {
         // TODO - Make picture appear if i have time
         // Create an ImageIcon of the chosen meal by looking up it's ID number and searching for the corresponding image
         // in the image file
+        JPanel imagePanel = new JPanel();
+        imagePanel.setBackground(Color.WHITE);
+        imagePanel.setLayout(new BorderLayout());
         ImageIcon picOfFood = new ImageIcon(new ImageIcon("./gobbledy_geek_graphic.png")
-                .getImage().getScaledInstance(400, 400, Image.SCALE_DEFAULT));
+                .getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
 
         // Create a label passing in the imageicon
         JLabel image = new JLabel(picOfFood);
-//        JLabel mainImage = new JLabel(new ImageIcon("gobbledy_geek_graphic.png"));
-//        mainImage.setSize(new Dimension(200, 200));
-//        mainWindowPanel.add(mainImage, BorderLayout.WEST);
+        imagePanel.add(image, BorderLayout.CENTER);
 
         // Add the returned panel from the UserInput class as well as the button to submit search results.
-        mainWindowPanel.add(image, BorderLayout.WEST);
+        mainWindowPanel.add(imagePanel, BorderLayout.WEST);
         mainWindowPanel.add(userInput.generateWindow(), BorderLayout.CENTER);
         mainWindowPanel.add(searchUsersButt, BorderLayout.SOUTH);
 
@@ -412,7 +413,7 @@ public class MenuSearcher {
         mainFrame.revalidate();
     }
 
-    // TODO - Add images to the returned items
+    // TODO - Extract description method
     /**
      * Adapted from SeekAGeek.java Lecture 10
      * A Method that displays all the menu items that matched the users choices from the defaultPane, allows the user
@@ -439,49 +440,54 @@ public class MenuSearcher {
 
         // Iterate through all matches
         for (int i = 0; i < potentialMatches.size(); i++) {
-            JPanel outterPanel = new JPanel();
-            outterPanel.setLayout(new BorderLayout());
-            outterPanel.setBackground(Color.white);
+            // Create a base panel to visually bring all elements together
+            JPanel basePanel = new JPanel();
+            // Set the panels layout and colour
+            basePanel.setLayout(new BorderLayout());
+            basePanel.setBackground(Color.white);
 
-            JPanel tempPanel = new JPanel();
-//            tempPanel.setLayout(new BorderLayout());
-            tempPanel.setAlignmentX(0);
-            tempPanel.setBackground(Color.white);
+            // Create a Panel to hold all components for each Menu Item returned
+            JPanel contentPanel = new JPanel();
+            // Set its background color to white
+            contentPanel.setBackground(Color.white);
+
+            // Create an ImageIcon passing it the file path of the current MenuItems ID to return the image related
+            // to the MenuItem
+            ImageIcon picOfFood = new ImageIcon(new ImageIcon("./images/"+ potentialMatches.get(i).menuItemIdentifier() +".png")
+                    .getImage().getScaledInstance(325, 325, Image.SCALE_DEFAULT));
+
+            // Create a label passing in the image icon
+            JLabel currentItemImage = new JLabel(picOfFood);
 
             // Create a Text area to display a matches information
             JTextArea mealDescription = new JTextArea();
-            mealDescription.setAlignmentX(0);
 
             // Depending on the type of meal a customer selected, get the information of the items only for that meal type
             if (type.equals(Type.BURGER)) mealDescription = new JTextArea(potentialMatches.get(i).toString());
             if (type.equals(Type.SALAD)) mealDescription = new JTextArea(potentialMatches.get(i).toString());
 
-            ImageIcon picOfFood = new ImageIcon(new ImageIcon("./images/"+ potentialMatches.get(i).menuItemIdentifier() +".png")
-                    .getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
-
-            // Create a label passing in the imageicon
-            JLabel image = new JLabel(picOfFood);
-            image.setAlignmentX(0);
-            tempPanel.add(Box.createRigidArea(new Dimension(20, 40)));
-            tempPanel.add(image);
-            tempPanel.add(Box.createRigidArea(new Dimension(20, 0)));
-
+            // Set the font and size of the TextArea
+            mealDescription.setFont(new Font("", Font. PLAIN, 17));
             // Stop the text field from being editable
             mealDescription.setEditable(false);
 
             // Control the text to wrap around lines and only break on spaces
             mealDescription.setLineWrap(true);
             mealDescription.setWrapStyleWord(true);
-            mealDescription.setPreferredSize(new Dimension(400, 300));
+            mealDescription.setPreferredSize(new Dimension(550, 350));
 
-            // Add the items full description to the mainpanel
-            tempPanel.add(mealDescription);
-//            outterPanel.add(Box.createRigidArea(new Dimension(20, 40)));
-            outterPanel.add(tempPanel, BorderLayout.WEST);
-//            outterPanel.add(Box.createRigidArea(new Dimension(20, 40)));
-            // Add padding after the description
-            mainPanel.add(outterPanel);
-            mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));;
+            // Add padding and both the Image and the item description to the contentpanel
+            contentPanel.add(Box.createRigidArea(new Dimension(5, 0)));;
+            contentPanel.add(currentItemImage);
+            contentPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+            contentPanel.add(mealDescription);
+
+            // Add the content Panel to hte basPanel
+            basePanel.add(contentPanel, BorderLayout.WEST);
+
+            // Add the BasePanel and some padding to the main panel holding all items
+            mainPanel.add(basePanel);
+            mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
             // Add the item to the String array of options to choose from for the combo Box
             menuOptions[i] = potentialMatches.get(i).menuItemName();
@@ -587,21 +593,29 @@ public class MenuSearcher {
      */
     public static void placeOrder(MenuItem chosenMeal){
 
-        JPanel itemInformation = new JPanel();
-
-        itemInformation.setBackground(Color.white);
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        JPanel contentPanel = new JPanel();
+        contentPanel.setBackground(Color.WHITE);
 
 
         // Title for the top of the window including the name of the meal and instructions for the customer
-        JLabel paneTitle = new JLabel("To place an order for a "+chosenMeal.menuItemName()+" Please enter your details below  ");
-
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BorderLayout());
+        JLabel panelTitle = new JLabel("To place an order for a "+chosenMeal.menuItemName()+" Please enter your details below  ");
+        titlePanel.add(Box.createRigidArea(new Dimension(0,10)), BorderLayout.NORTH);
+        titlePanel.add(Box.createRigidArea(new Dimension(10,0)), BorderLayout.WEST);
+        titlePanel.add(panelTitle, BorderLayout.CENTER);
+        titlePanel.add(Box.createRigidArea(new Dimension(0,10)), BorderLayout.SOUTH);
         // Create a ScrollPane and populate it with the details of the users choice of meal
-        JScrollPane jScrollPane = new JScrollPane(chosenItemDescription(chosenMeal));
+//        JScrollPane jScrollPane = new JScrollPane(chosenItemDescription(chosenMeal));
 
-        JTextArea item = new JTextArea(chosenItemDescription(chosenMeal).toString());
+        JTextArea itemDescription = chosenItemDescription(chosenMeal);
+        itemDescription.setPreferredSize(new Dimension(350, 350));
+        itemDescription.setFont(new Font("", Font. PLAIN, 15));
         // Set the size of the Scroll pane
-        jScrollPane.getViewport().setPreferredSize(new Dimension(400,400));
-        jScrollPane.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+//        jScrollPane.getViewport().setPreferredSize(new Dimension(400,400));
+//        jScrollPane.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 //        jScrollPane.setLayout(new BorderLayout());
         // Create a Panel to hold the panel that has the title, the image and the item description
 //        JPanel controlPane = new JPanel();
@@ -615,13 +629,16 @@ public class MenuSearcher {
         // Create an ImageIcon of the chosen meal by looking up it's ID number and searching for the corresponding image
         // in the image file
         ImageIcon picOfFood = new ImageIcon(new ImageIcon("./images/"+ chosenMeal.menuItemIdentifier() +".png")
-                .getImage().getScaledInstance(200, 200, Image.SCALE_DEFAULT));
+                .getImage().getScaledInstance(250, 250, Image.SCALE_DEFAULT));
 
         // Create a label passing in the imageicon
         JLabel image = new JLabel(picOfFood);
 
-        itemInformation.add(image);
-        itemInformation.add(jScrollPane);
+        contentPanel.add(Box.createRigidArea(new Dimension(10,0)));
+        contentPanel.add(image);
+        contentPanel.add(Box.createRigidArea(new Dimension(10,0)));
+//        contentPanel.add(jScrollPane);
+        contentPanel.add(itemDescription);
 //        jScrollPane.add(image, BorderLayout.WEST);
         // Add the title, Image and description to the panel
 //        itemDescriptionPanel.add(paneTitle, BorderLayout.NORTH);
@@ -636,21 +653,29 @@ public class MenuSearcher {
         // Create a Panel and pass it the return value from the contactForm method
         JPanel userInputPanel = userInput.orderForm();
 
+        JPanel onePanel = new JPanel();
+//        onePanel.add(Box.createRigidArea(new Dimension(10,0)));
+        onePanel.add(userInputPanel);
+        onePanel.add(Box.createRigidArea(new Dimension(10,0)));
+        onePanel.add(contentPanel);
+//        onePanel.add(Box.createRigidArea(new Dimension(10,0)));
+
         // Create a button for confirmation by calling the submitOrderButton Method
         JButton submit = submitOrderButton(chosenMeal);
 
         // Create the main panel for the entire view, tweak its parameters and add all the other panels and the button
-        JPanel mainFramePanel = new JPanel();
-        mainFramePanel.setLayout(new BorderLayout());
-        mainFramePanel.add(itemInformation );
-//        mainFramePanel.add(jScrollPane);
-//        mainFramePanel.add(userInputPanel);
-//        mainFramePanel.add(Box.createRigidArea(new Dimension(20,0)),BorderLayout.WEST);
+//        mainPanel.add(Box.createRigidArea(new Dimension(20,20)));
+        mainPanel.add(titlePanel, BorderLayout.NORTH);
+//        mainPanel.add(Box.createRigidArea(new Dimension(20,0)));
+//        mainPanel.add(userInputPanel);
+//        mainPanel.add(Box.createRigidArea(new Dimension(20,0)));
+        mainPanel.add(onePanel, BorderLayout.CENTER);
+//        mainPanel.add(Box.createRigidArea(new Dimension(20,0)));
 //        mainFramePanel.add(Box.createRigidArea(new Dimension(20,0)),BorderLayout.EAST);
-        mainFramePanel.add(submit, BorderLayout.SOUTH);
+        mainPanel.add(submit, BorderLayout.SOUTH);
 
         // Inform the MainFrame that we are changing which panel is our new viewing panel
-        userInformationView = mainFramePanel;
+        userInformationView = mainPanel;
         mainFrame.setContentPane(userInformationView);
         mainFrame.revalidate();
     }
