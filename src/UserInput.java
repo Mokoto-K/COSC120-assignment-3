@@ -115,21 +115,12 @@ public class UserInput {
 
     public JPanel centerPanel() {
         JPanel panel = new JPanel();
-//        panel.setLayout(new BorderLayout());
-        panel.setLayout(new GridLayout(2,2));
+        panel.setLayout(new BorderLayout());
 
         panel.setBorder(BorderFactory.createTitledBorder("Please choose the extras you would like"));
 
-        panel.add(picklePanel());
-        panel.add(meatPanel());
-        panel.add(tomatoPanel());
-        panel.add(cheesePanel());
-
-//        panel.setAlignmentX(0);
-//        panel.add(leftPanel(), BorderLayout.WEST);
-//        panel.add(Box.createRigidArea(new Dimension(100, 10)));
-//        panel.add(rightPanel(), BorderLayout.EAST);
-//        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        panel.add(leftPanel(), BorderLayout.WEST);
+        panel.add(rightPanel(), BorderLayout.EAST);
 
         return panel;
     }
@@ -513,10 +504,8 @@ public class UserInput {
         panel.setLayout(new BorderLayout());
         panel.setAlignmentX(0);
 
-        panel.add(Box.createRigidArea(new Dimension(20, 0)));
         panel.add(picklePanel(), BorderLayout.NORTH);
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
-        panel.add(tomatoPanel(), BorderLayout.SOUTH);
+        panel.add(tomatoPanel(), BorderLayout.WEST);
 
         return panel;
 
@@ -527,10 +516,8 @@ public class UserInput {
         panel.setLayout(new BorderLayout());
         panel.setAlignmentX(0);
 
-        panel.add(Box.createRigidArea(new Dimension(20, 0)));
         panel.add(meatPanel(), BorderLayout.NORTH);
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
-        panel.add(cheesePanel(), BorderLayout.SOUTH);
+        panel.add(cheesePanel(), BorderLayout.WEST);
 //
         return panel;
 
@@ -551,7 +538,7 @@ public class UserInput {
         radioPanel.setAlignmentX(0);
         // Assign the pickle button group to a button group and add all of the options to the button group
         pickleButtonGroup = new ButtonGroup();
-        JLabel pickleLabel = new JLabel("Pickles?");
+        JLabel pickleLabel = new JLabel("Pickles? ");
         JRadioButton yes = new JRadioButton("yes");
         JRadioButton no = new JRadioButton("no");
         JRadioButton neither = new JRadioButton("I don't mind");
@@ -796,41 +783,36 @@ public class UserInput {
             }
         });
 
-        // Create a panel to hold all the price related J components
+        // Create panels to hold the prices and the feedback components
         JPanel pricePanel = new JPanel();
         JPanel feedBackPanel = new JPanel();
+        feedBackPanel.setLayout(new BoxLayout(feedBackPanel, BoxLayout.Y_AXIS));
+        feedBackPanel.setPreferredSize(new Dimension(600, 30));
 
-
-
+        // Add the min price components to the price panel
         pricePanel.add(minLabel);
         pricePanel.add(Box.createRigidArea(new Dimension(10,0)));
         pricePanel.add(min);
         pricePanel.add(Box.createRigidArea(new Dimension(10,0)));
 
+        // ADD the max price components to the price panel
         pricePanel.add(maxLabel);
         pricePanel.add(Box.createRigidArea(new Dimension(10,0)));
         pricePanel.add(max);
 
-
-        feedBackPanel.add(Box.createRigidArea(new Dimension(10,10)));
+        // Add the feedback to the feedback panel
         feedBackPanel.add(feedbackMin);
-        feedBackPanel.add(Box.createRigidArea(new Dimension(10,10)));
         feedBackPanel.add(feedbackMax);
-        feedBackPanel.add(Box.createRigidArea(new Dimension(10,10)));
-
 
         // Create the main panel to hold all components
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        // Set the panels default settings and add the price panel and feedback labels
-//        mainPanel.setBorder(BorderFactory.createTitledBorder("Enter desired Price range"));
-//        mainPanel.setPreferredSize(new Dimension(300, 100));
+        // Add padding and add the price panel and feedback labels
         mainPanel.add(Box.createRigidArea(new Dimension(0,10)));
-        mainPanel.add(pricePanel, BorderLayout.NORTH);
-        mainPanel.add(feedBackPanel, BorderLayout.SOUTH);
+        mainPanel.add(pricePanel);
+        mainPanel.add(feedBackPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0,10)));
-
 
         return mainPanel;
     }
@@ -908,7 +890,7 @@ public class UserInput {
      */
     public JPanel orderForm(){
         // Create the labels for the text fields
-        JLabel enterName = new JLabel(" Full name");
+        JLabel enterName = new JLabel(" Full name (First and Last)");
         enterName.setAlignmentX(0);
         JLabel enterPhoneNumber = new JLabel(" Phone number");
         enterPhoneNumber.setAlignmentX(0);
@@ -922,6 +904,7 @@ public class UserInput {
         phoneNumber.setAlignmentX(0);
         customMessage = new JTextArea(6,16);
 
+        // Align the feedback labels
         feedbackName.setAlignmentX(0);
         feedbackNumber.setAlignmentX(0);
 
@@ -970,22 +953,23 @@ public class UserInput {
         jScrollPane.setAlignmentX(0);
         jScrollPane.setPreferredSize(new Dimension(300, 200));
 
+        // Create a panel to hold all name elements
         JPanel namePanel = new JPanel();
         namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.Y_AXIS));
         namePanel.setPreferredSize(new Dimension(300, 60));
-//        namePanel.add(Box.createRigidArea(new Dimension(10,0)));
         namePanel.add(enterName);
         namePanel.add(name);
         namePanel.add(feedbackName);
 
+        // Create a panel to hold all phone number elements
         JPanel numberPanel = new JPanel();
         numberPanel.setLayout(new BoxLayout(numberPanel, BoxLayout.Y_AXIS));
         numberPanel.setPreferredSize(new Dimension(300, 60));
-//        numberPanel.add(Box.createRigidArea(new Dimension(10,0)));
         numberPanel.add(enterPhoneNumber);
         numberPanel.add(phoneNumber);
         numberPanel.add(feedbackNumber);
 
+        // Create a panel to hold all custom message elements
         JPanel messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
         messagePanel.setPreferredSize(new Dimension(300, 200));
@@ -999,6 +983,7 @@ public class UserInput {
         userInputPanel.setLayout(new BoxLayout(userInputPanel,BoxLayout.Y_AXIS));
         userInputPanel.setAlignmentX(0);
 
+        // Add all elements to the main panel
         userInputPanel.add(Box.createRigidArea(new Dimension(10,0)));
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
         userInputPanel.add(namePanel);
@@ -1006,10 +991,6 @@ public class UserInput {
         userInputPanel.add(numberPanel);
         userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
         userInputPanel.add(messagePanel);
-//        userInputPanel.add(Box.createRigidArea(new Dimension(0,20)));
-//        userInputPanel.add(jScrollPane);
-//        userInputPanel.add(Box.createRigidArea(new Dimension(10,0)));
-//        userInputPanel.add(Box.createRigidArea(new Dimension(0,10)));
 
         return userInputPanel;
     }
@@ -1028,7 +1009,7 @@ public class UserInput {
             return false;
             // If the input is incorrect, hint them to the correct response
         }else {
-            feedbackName.setText("Full Name starting with capitals");
+            feedbackName.setText("Capitalized names, A-Z only");
             feedbackName.setFont(new Font("", Font. ITALIC, 10));
             feedbackName.setForeground(Color.RED);
             nameField.selectAll();
