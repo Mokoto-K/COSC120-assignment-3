@@ -32,13 +32,12 @@ public class MenuSearcher {
     // Initialize our default JFrame and Panels to be used throughout the class
     private static JFrame mainFrame;
     private static JPanel defaultPane = null;
-    private static JPanel userInformationView = null; //view 3
 
     // Initialize the comboBox that will hold all the returned matches from the users order
     private static JComboBox<String> matchingMealsCombo = null;
 
     public static void main(String[] args) {
-        menu = loadMenu(filePath);
+        menu = loadMenu();
 
         // Create the main frame for our gui
         mainFrame = new JFrame(appName);
@@ -60,11 +59,10 @@ public class MenuSearcher {
 
     /**
      * Method to read in a database and convert the content into a map object that is used to initialize
-     * the each item from the data, it does this by create MenuItems from each line of the file.
-     * @param filePath - A String containing the location of the database file
+     * each item from the data, it does this by create MenuItems from each line of the file.
      * @return menu - A Menu object containing the entire database to be used throughout the program
      */
-    public static Menu loadMenu(String filePath) {
+    private static Menu loadMenu() {
         // Create  Menu object to use to hold all the items from the database
         Menu menu = new Menu();
 
@@ -82,7 +80,7 @@ public class MenuSearcher {
             System.exit(0);
         }
 
-        // Iterate throught the list containing all the lines from the database
+        // Iterate through the list containing all the lines from the database
         for(int i=1;i<fileContents.size();i++){
 
             // Split up each line via the comma
@@ -231,7 +229,7 @@ public class MenuSearcher {
      * search button
      * @return a JPanel of potential meal options from the database as well as a search button
      */
-    public static JPanel mainPanel() {
+    private static JPanel mainPanel() {
         // Create the main panel for the search view part of the GUI, the 1st view
         JPanel mainWindowPanel = new JPanel();
 
@@ -248,7 +246,6 @@ public class MenuSearcher {
         // Adding the listener to the button
         searchUsersButt.addActionListener(listener);
 
-        // TODO - Make picture appear if i have time
         // Create an ImageIcon of the chosen meal by looking up it's ID number and searching for the corresponding image
         // in the image file
         JPanel imagePanel = new JPanel();
@@ -257,7 +254,7 @@ public class MenuSearcher {
         ImageIcon picOfFood = new ImageIcon(new ImageIcon("./gobbledy_geek_graphic.png")
                 .getImage().getScaledInstance(300, 300, Image.SCALE_DEFAULT));
 
-        // Create a label passing in the imageicon
+        // Create a label passing in the image icon
         JLabel image = new JLabel(picOfFood);
         imagePanel.add(image, BorderLayout.CENTER);
 
@@ -272,9 +269,9 @@ public class MenuSearcher {
     /**
      * Method used to collect the user entered data and send the results to be compared against all items in the
      * database, which will be returned as a list and passed onto the resultsMainPanel Method
-     * @param userInput - An instance of the UserINput class which handles the Components for the main view
+     * @param userInput - An instance of the User input class which handles the Components for the main view
      */
-    public static void searchForItems(UserInput userInput) {
+    private static void searchForItems(UserInput userInput) {
         // Create a new map to hold our customers selections
         Map<Filter, Object> filtersMap = new HashMap<>();
 
@@ -354,7 +351,7 @@ public class MenuSearcher {
 
         // Create a DreamMeniItem passing in the map and the customers price range values
         DreamMenuItem dreamMenuItem = new DreamMenuItem(filtersMap, minimumPrice, maximumPrice);
-        // Pass the customers dreamMenuItem to the findmatch method to check for matches in the database
+        // Pass the customers dreamMenuItem to the find match method to check for matches in the database
         List<MenuItem> potentialMatches = menu.findMatch(dreamMenuItem);
 
         // If potential matches returns empty
@@ -373,7 +370,7 @@ public class MenuSearcher {
     /**
      * Re-initiates the defaultPane and restarts the mainFrame with the defaultPane
      */
-    public static void restartDefaultPane(){
+    private static void restartDefaultPane(){
         // Initiate the defaultPane with the output of the mainPanel
         defaultPane = mainPanel();
         // Reset the mainFrame with the defaultPane
@@ -385,11 +382,11 @@ public class MenuSearcher {
     /**
      * Adapted from SeekAGeek.java Lecture 10
      * The method that displays the results for the customers search, it does this by calling the methods needed
-     * to get the information of the returned matches from the database as well as those same items in a combobox
+     * to get the information of the returned matches from the database as well as those same items in a combo box
      * to be selected by the customer and a JButton to let the user search again.
-     * @param potentialMatches - A List of menuitems from the database that matched the users search criteria
+     * @param potentialMatches - A List of menu items from the database that matched the users search criteria
      */
-    public static void resultsMainPanel(List<MenuItem> potentialMatches) {
+    private static void resultsMainPanel(List<MenuItem> potentialMatches) {
 
         // Generate the Base panel for the search results to be displayed on and set the layout
         JPanel main = new JPanel();
@@ -413,16 +410,14 @@ public class MenuSearcher {
         mainFrame.revalidate();
     }
 
-    // TODO - Extract description method
     /**
-     * Loosely Adapted from SeekAGeek.java Lecture 10
      * A Method that displays all the menu items that matched the users choices from the defaultPane, allows the user
      * to also make a selection of which menu item they would like or to search again if the results were not what
      * they were looking for
-     * @param potentialMatches - A List of menuitems from the database that matched the users search criteria
+     * @param potentialMatches - A List of menu items from the database that matched the users search criteria
      * @return verticalScrollBar - A JScrollBar object containing all the matched menu items from the users selections
      */
-    public static JScrollPane generateResultsList(List<MenuItem> potentialMatches) {
+    private static JScrollPane generateResultsList(List<MenuItem> potentialMatches) {
         // Initialize a string array to hold all the names of the menu items that will populate the comboBox
         String[] menuOptions = new String[potentialMatches.size()];
 
@@ -460,24 +455,10 @@ public class MenuSearcher {
             JLabel currentItemImage = new JLabel(picOfFood);
 
             // Create a Text area to display a matches information
-            JTextArea mealDescription = new JTextArea();
+            JTextArea mealDescription = matchedItemDescription(potentialMatches, i);
 
-            // Depending on the type of meal a customer selected, get the information of the items only for that meal type
-            if (type.equals(Type.BURGER)) mealDescription = new JTextArea(potentialMatches.get(i).toString());
-            if (type.equals(Type.SALAD)) mealDescription = new JTextArea(potentialMatches.get(i).toString());
-
-            // Set the font and size of the TextArea
-            mealDescription.setFont(new Font("", Font. PLAIN, 17));
-            // Stop the text field from being editable
-            mealDescription.setEditable(false);
-
-            // Control the text to wrap around lines and only break on spaces
-            mealDescription.setLineWrap(true);
-            mealDescription.setWrapStyleWord(true);
-            mealDescription.setPreferredSize(new Dimension(550, 350));
-
-            // Add padding and both the Image and the item description to the contentpanel
-            contentPanel.add(Box.createRigidArea(new Dimension(5, 0)));;
+            // Add padding and both the Image and the item description to the content panel
+            contentPanel.add(Box.createRigidArea(new Dimension(5, 0)));
             contentPanel.add(currentItemImage);
             contentPanel.add(Box.createRigidArea(new Dimension(20, 0)));
             contentPanel.add(mealDescription);
@@ -502,7 +483,7 @@ public class MenuSearcher {
         // Set the bar to always appear
         verticalScrollBar.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        // The comment below is a really good comment, so good that im commenting about the comment!
+        // The comment below is a good comment, so good that im commenting about the comment!
         //this positions the scrollbar at the top (without it, the scrollbar loads part way through
         //adding of the text areas to the JPanel, resulting in the scrollbar being halfway down the results
         SwingUtilities.invokeLater(() -> verticalScrollBar.getViewport().setViewPosition( new Point(0, 0) ));
@@ -510,13 +491,39 @@ public class MenuSearcher {
     }
 
     /**
-     * Adapted from seekAGeek.java Lecture 10 - There were no changes made to this method besides variable names & comments
-     * A Method used to create a panel that contains both a combobox for the user to select an item from and a button
-     * that can be clicked to take a user back to the start of the program.
-     * @param potentialMatches - A List of menuitems from the database that matched the users search criteria
-     * @return - JPanel containing a combobox and Jbutton
+     * Takes in a list of potential matches and an integer representing an index for an
+     * item in the list and returns the description of the item from that index
+     * @param potentialMatches - a list of matched menu items from the users input
+     * @param i - an integer representing which matched menu item from the matched list
+     * @return A J text area composed of the description for the given potential match
      */
-    public static JPanel selectFromResultsList(List<MenuItem> potentialMatches) {
+    private static JTextArea matchedItemDescription(List<MenuItem> potentialMatches, int i) {
+        JTextArea mealDescription = new JTextArea();
+
+        // Depending on the type of meal a customer selected, get the information of the items only for that meal type
+        if (type.equals(Type.BURGER)) mealDescription = new JTextArea(potentialMatches.get(i).toString());
+        if (type.equals(Type.SALAD)) mealDescription = new JTextArea(potentialMatches.get(i).toString());
+
+        // Set the font and size of the TextArea
+        mealDescription.setFont(new Font("", Font. PLAIN, 17));
+        // Stop the text field from being editable
+        mealDescription.setEditable(false);
+
+        // Control the text to wrap around lines and only break on spaces
+        mealDescription.setLineWrap(true);
+        mealDescription.setWrapStyleWord(true);
+        mealDescription.setPreferredSize(new Dimension(550, 350));
+        return mealDescription;
+    }
+
+    /**
+     * Adapted from seekAGeek.java Lecture 10 - There were no changes made to this method besides variable names & comments
+     * A Method used to create a panel that contains both a combo box for the user to select an item from and a button
+     * that can be clicked to take a user back to the start of the program.
+     * @param potentialMatches - A List of menu items from the database that matched the users search criteria
+     * @return - JPanel containing a combo box and J button
+     */
+    private static JPanel selectFromResultsList(List<MenuItem> potentialMatches) {
         // Let the user know their options if they don't like the displayed list of menu items
         JLabel noneMessage = new JLabel("If the displayed items do not please you, try search again or exit");
 
@@ -552,7 +559,7 @@ public class MenuSearcher {
         selectionPanel.add(Box.createRigidArea(new Dimension(0,10)));
         selectionPanel.setBorder(BorderFactory.createTitledBorder("Please select which meal you'd like to order:"));
 
-        // Add the label to search again as well as the button and combobox panel
+        // Add the label to search again as well as the button and combo box panel
         selectionPanel.add(noneMessage);
         selectionPanel.add(buttonOptionPanel);
         selectionPanel.add(Box.createRigidArea(new Dimension(10,0)));
@@ -565,7 +572,7 @@ public class MenuSearcher {
      * next display window
      * @param potentialMatches - A List of menuItems from the database that matched the users search criteria
      */
-    public static void checkUserSelection(List<MenuItem> potentialMatches){
+    private static void checkUserSelection(List<MenuItem> potentialMatches){
 
         // Variable for the users selected meal from the combo box
         String selectedItem = (String) matchingMealsCombo.getSelectedItem();
@@ -590,7 +597,7 @@ public class MenuSearcher {
      * users information off to be turned into an order file.
      * @param chosenMeal - The users selected meal they would like to order
      */
-    public static void placeOrder(MenuItem chosenMeal){
+    private static void placeOrder(MenuItem chosenMeal){
 
         // Create the main panel to hold all sub panels
         JPanel mainPanel = new JPanel();
@@ -620,7 +627,7 @@ public class MenuSearcher {
         ImageIcon picOfFood = new ImageIcon(new ImageIcon("./images/"+ chosenMeal.menuItemIdentifier() +".png")
                 .getImage().getScaledInstance(250, 250, Image.SCALE_DEFAULT));
 
-        // Create a label passing in the imageicon
+        // Create a label passing in the image icon
         JLabel image = new JLabel(picOfFood);
 
         // Add the image and the item description to the content panel
@@ -648,8 +655,8 @@ public class MenuSearcher {
         mainPanel.add(submit, BorderLayout.SOUTH);
 
         // Inform the MainFrame that we are changing which panel is our new viewing panel
-        userInformationView = mainPanel;
-        mainFrame.setContentPane(userInformationView);
+        //view 3
+        mainFrame.setContentPane(mainPanel);
         mainFrame.revalidate();
     }
 
@@ -663,15 +670,17 @@ public class MenuSearcher {
     private static JButton submitOrderButton(MenuItem chosenMeal) {
         JButton submit = new JButton("Submit");
 
-        // The listener and the string that will be sent to be turned into a txtfile for ordering
+        // The listener and the string that will be sent to be turned into a txt file for ordering
         ActionListener actionListener = e -> {
+
+            String orderPath = userInput.getName().replace(" ","_") + "_" + chosenMeal.menuItemIdentifier() + ".txt";
 
             // As long as the user input is correct, append all details to the string
             if (userInput.isValidFullName(userInput.getName()) && userInput.isValidPhoneNumber(userInput.getPhoneNumber())) {
                 String lineToWrite = "Order Details: \n" + "\tName: " + userInput.getName() + " (" + userInput.getPhoneNumber()
-                        + ")\n\t" + "Item: " + chosenMeal.menuItemName() + "(" + chosenMeal.menuItemIdentifier() + ")" +
-                        "\n\nCustomisation: " + userInput.getMessage();
-                createCustomerOrderFile(lineToWrite);
+                        + ")\n\t" + "Item: " + chosenMeal.menuItemName() + " (" + chosenMeal.menuItemIdentifier() + ")" +
+                        "\n\nCustomisation: \n" + userInput.getMessage();
+                createCustomerOrderFile(lineToWrite, orderPath);
             } else {
                 // Let the customer know if they have made a mistake or missed a text book
                 JOptionPane.showMessageDialog(mainFrame, "Please Enter your Full Name and Phone Number \n" +
@@ -688,12 +697,11 @@ public class MenuSearcher {
      * Method to take a passed in string and write it to a file of the users order
      * @param orderContent - A String containing the users name, number, and order
      */
-    public static void createCustomerOrderFile(String orderContent){
-        // Initialise a string to contain the filepath of where we will save our order
-        String orderPath = userInput.getName().replace(" ","_")+"_query.txt";
+    private static void createCustomerOrderFile(String orderContent, String orderPath){
+
         Path path = Path.of(orderPath);
 
-        // Try write the content of the passed in string to a file, alert the customer of the outcome.
+        // write the content of the passed in string to a file, alert the customer of the outcome.
         try {
             Files.writeString(path, orderContent);
             JOptionPane.showMessageDialog(mainFrame,"Thank you for your order. \nWe be cooking up a storm for you now. \nClick close to end this transaction."
@@ -708,11 +716,11 @@ public class MenuSearcher {
     /**
      * Adapted for FindAPet.java Tutorial 10
      * A Method that takes a MenuItem selected by the user to purchase and returns the details of the item as a
-     * textfield
+     * text field
      * @param menuItem - The order a user has selected
-     * @return  itemDescription - A JTEXTFIELD containing the description of the item a user is ordering
+     * @return  itemDescription - A J TEXT FIELD containing the description of the item a user is ordering
      */
-    public static JTextArea chosenItemDescription(MenuItem menuItem){
+    private static JTextArea chosenItemDescription(MenuItem menuItem){
         // Create a Textarea filled in with the details of the item the customer has ordered
         JTextArea itemDescription = new JTextArea(menuItem.toString());
 

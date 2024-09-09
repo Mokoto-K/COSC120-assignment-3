@@ -6,7 +6,7 @@
  * gobbledy geek eatery
  */
 
-// An Enum class repreenting all possible options for items to put on a burger or on a salad, used as keys in a map
+// An Enum class representing all possible options for items to put on a burger or on a salad, used as keys in a map
 // to keep track of items in the database
 public enum Filter {
 

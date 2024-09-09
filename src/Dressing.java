@@ -6,7 +6,7 @@
  * gobbledy geek eatery
  */
 
-// An Enum representing Dressings  for a salade
+// An Enum representing Dressings for a salad
 public enum Dressing {
 
     RANCH,FRENCH,ITALIAN,GREEN_GODDESS,NA;

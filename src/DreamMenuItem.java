@@ -110,22 +110,18 @@ public class DreamMenuItem {
         // values (keys) stored in the users map and check for comparison of only those keys
 
         for (Filter key : dreamMenuItem.getAllFilters().keySet()) {
-//            System.out.println(dreamMenuItem.getAllFilters());
-//            System.out.println(this.getAllFilters());
+
             // if a menu item from the database contains a key that is also in the users dream menu item map
             if (this.getAllFilters().containsKey(key)) {
 
                 // If both the database menu items and the users dream menu item are collection, compare them here
                 if (this.getFilter(key) instanceof Collection<?> && dreamMenuItem.getFilter(key) instanceof Collection<?>) {
-//
 
                     // Creating a set of objects of the database and dream menu item collection
                     Set<Object> intersect = new HashSet<>((Collection<?>) this.getFilter(key));
 
-                    // if the set is empty after running retain all, then there were no matching features so we return false
+                    // if the set is empty after running retain all, then there were no matching features, so we return false
                     intersect.retainAll((Collection<?>) dreamMenuItem.getFilter(key));
-
-                    System.out.println(dreamMenuItem.getFilter(key)+ " " +this.getFilter(key) + " " + intersect);
 
                     if (intersect.isEmpty()) {
                         return false;
@@ -135,7 +131,7 @@ public class DreamMenuItem {
                 else if (this.getFilter(key) instanceof Collection<?> && !(dreamMenuItem.getFilter(key) instanceof Collection<?>)) {
 
 
-                    // return false if the users dream menu item attribute isnt in the database menu item collection
+                    // return false if the users dream menu item attribute isn't in the database menu item collection
                     if (!((Collection<?>) this.getFilter(key)).contains(dreamMenuItem.getFilter(key))) {
                         return false;
                     }

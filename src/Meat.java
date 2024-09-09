@@ -6,10 +6,15 @@
  * gobbledy geek eatery
  */
 
+// An enum representing the meat for a menu item
 public enum Meat {
 
     BEEF, CHICKEN, VEGAN, NA;
 
+    /**
+     *
+     * @return a prettified version of the case that is selected by the user.
+     */
     public String toString(){
         return switch (this) {
             case BEEF -> "Beef";
