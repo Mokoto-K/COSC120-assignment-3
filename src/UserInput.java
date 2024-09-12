@@ -326,7 +326,6 @@ public class UserInput {
         // Create a listener to focus on the selections in the list, if the burger type was selected by the user
         // set the sauce variable to a set of selected items, otherwise set it to the same for leafy greens
         ListSelectionListener listener = e -> {
-            // TODO - Might have to specifically address the select case, instead of burger or else
             if (selectedOption == Type.BURGER) {
                 sauce = new HashSet<>(sauceOrGreensList.getSelectedValuesList());
             }
@@ -431,7 +430,7 @@ public class UserInput {
             // Select the default item in the combo box to the first item
             bunOrDressingCombo.setSelectedItem(bunOrDressingCombo.getItemAt(0));
 
-            sauceOrGreensLabel.setText("Select Which sauce(s) you'd like to add");
+            sauceOrGreensLabel.setText("Select sauce(s), click + ctrl for multiple.");
 
             // Delete all the elements in the sauceOrGreensModel (this will be a list of either sauce of leafy greens)
             sauceOrGreensModel.removeAllElements();
@@ -475,7 +474,7 @@ public class UserInput {
             // Set the default value in the combo box
 //            bunOrDressingCombo.setSelectedItem(Dressing.NA);
 
-            sauceOrGreensLabel.setText("Select which Leafy Green(s) you'd like to add");
+            sauceOrGreensLabel.setText("Select Leafy Green(s), click + ctrl for multiple.");
 
             // Delete all the elements in the sauceOrGreensModel (this will be a list of either sauce of leafy greens)
             sauceOrGreensModel.removeAllElements();
